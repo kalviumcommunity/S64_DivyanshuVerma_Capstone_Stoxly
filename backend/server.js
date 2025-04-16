@@ -69,6 +69,25 @@ app.get('/api/stock/price', async (req, res) => {
 
 
 
+app.post('/api/stock/price', async (req, res) => {
+  try {
+    const { symbol, date } = req.body;
+
+    if (!symbol || !date) {
+      return res.status(400).json({
+        error: 'Symbol and date are required in the request body'
+      });
+    }
+
+    const closingPrice = await fetchClosingPrice(symbol, date);
+    res.json({ symbol, date, closingPrice });
+  } catch (error) {
+    console.error('Error fetching stock price:', error);
+    res.status(500).json({ error: 'Failed to fetch stock price' });
+  }
+});
+
+
 const PORT = process.env.PORT || 5000;
 
 app.listen(PORT, () => {
