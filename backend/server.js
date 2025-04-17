@@ -2,7 +2,8 @@ const express = require('express');
 const cors = require('cors');
 const dotenv = require('dotenv');
 const https = require('https');
-
+const mongoose = require('mongoose');
+const Portfolio = require('./models/portfolio');
 
 dotenv.config();
 
@@ -12,8 +13,7 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-// In-memory storage for portfolio
-let portfolio = {};
+
 
 const fetchClosingPrice = async (symbol, date) => {
   const options = {
@@ -25,7 +25,7 @@ const fetchClosingPrice = async (symbol, date) => {
       'APCA-API-KEY-ID': process.env.ALPACA_API_KEY,
       'APCA-API-SECRET-KEY': process.env.ALPACA_SECRET_KEY,
     },
-    rejectUnauthorized: false // This will bypass SSL certificate validation
+    rejectUnauthorized: false
   };
 
   return new Promise((resolve, reject) => {
@@ -72,7 +72,6 @@ app.get('/api/stock/price', async (req, res) => {
 });
 
 
-
 app.post('/api/stock/price', async (req, res) => {
   try {
     const { symbol, date, quantity = 0 } = req.body;
@@ -85,29 +84,39 @@ app.post('/api/stock/price', async (req, res) => {
 
     const closingPrice = await fetchClosingPrice(symbol, date);
     
-    // Store the data in portfolio
-    portfolio[symbol] = {
-      symbol,
-      date,
-      closingPrice,
-      quantity: Number(quantity),
-      totalValue: closingPrice * Number(quantity),
-      lastUpdated: new Date().toISOString()
-    };
+
+    const portfolioEntry = await Portfolio.findOneAndUpdate(
+      { symbol, date: new Date(date) },
+      {
+        symbol,
+        date: new Date(date),
+        closingPrice,
+        quantity: Number(quantity),
+        totalValue: closingPrice * Number(quantity),
+        lastUpdated: new Date()
+      },
+      { upsert: true, new: true }
+    );
 
     res.json({
       message: 'Stock data stored successfully',
-      data: portfolio[symbol]
+      data: portfolioEntry
     });
   } catch (error) {
-    console.error('Error fetching stock price:', error);
-    res.status(500).json({ error: 'Failed to fetch stock price' });
+    console.error('Error storing stock data:', error);
+    res.status(500).json({ error: 'Failed to store stock data' });
   }
 });
 
 
-app.get('/api/portfolio', (req, res) => {
-  res.json(portfolio);
+app.get('/api/portfolio', async (req, res) => {
+  try {
+    const portfolio = await Portfolio.find().sort({ date: -1 });
+    res.json(portfolio);
+  } catch (error) {
+    console.error('Error fetching portfolio:', error);
+    res.status(500).json({ error: 'Failed to fetch portfolio' });
+  }
 });
 
 
@@ -122,25 +131,52 @@ app.put('/api/portfolio/:symbol', async (req, res) => {
       });
     }
 
-    // Get current price for the stock
+
     const currentDate = date || new Date().toISOString().split('T')[0];
     const currentPrice = await fetchClosingPrice(symbol, currentDate);
 
-    // Update portfolio
-    portfolio[symbol] = {
-      quantity: Number(quantity),
-      lastUpdated: currentDate,
-      currentPrice: currentPrice,
-      totalValue: currentPrice * Number(quantity)
-    };
+
+    const updatedPortfolio = await Portfolio.findOneAndUpdate(
+      { symbol, date: new Date(currentDate) },
+      {
+        quantity: Number(quantity),
+        currentPrice: currentPrice,
+        totalValue: currentPrice * Number(quantity),
+        lastUpdated: new Date()
+      },
+      { upsert: true, new: true }
+    );
 
     res.json({
       message: 'Portfolio updated successfully',
-      stock: portfolio[symbol]
+      stock: updatedPortfolio
     });
   } catch (error) {
     console.error('Error updating portfolio:', error);
     res.status(500).json({ error: 'Failed to update portfolio' });
+  }
+});
+
+
+app.delete('/api/portfolio/:symbol', async (req, res) => {
+  try {
+    const { symbol } = req.params;
+    const { date } = req.query;
+
+    const query = { symbol };
+    if (date) {
+      query.date = new Date(date);
+    }
+
+    const result = await Portfolio.deleteMany(query);
+    
+    res.json({
+      message: 'Stock(s) removed successfully',
+      deletedCount: result.deletedCount
+    });
+  } catch (error) {
+    console.error('Error removing stock:', error);
+    res.status(500).json({ error: 'Failed to remove stock' });
   }
 });
 
