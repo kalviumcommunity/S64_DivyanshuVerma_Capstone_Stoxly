@@ -131,17 +131,17 @@ app.put('/api/portfolio/:symbol', async (req, res) => {
       });
     }
 
-
+    // Get current price for the stock
     const currentDate = date || new Date().toISOString().split('T')[0];
-    const currentPrice = await fetchClosingPrice(symbol, currentDate);
+    const closingPrice = await fetchClosingPrice(symbol, currentDate);
 
-
+    // Update portfolio
     const updatedPortfolio = await Portfolio.findOneAndUpdate(
       { symbol, date: new Date(currentDate) },
       {
         quantity: Number(quantity),
-        currentPrice: currentPrice,
-        totalValue: currentPrice * Number(quantity),
+        closingPrice: closingPrice,
+        totalValue: closingPrice * Number(quantity),
         lastUpdated: new Date()
       },
       { upsert: true, new: true }
