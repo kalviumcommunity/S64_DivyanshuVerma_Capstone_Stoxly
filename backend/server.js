@@ -12,6 +12,9 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
+// In-memory storage for portfolio
+let portfolio = {};
+
 const fetchClosingPrice = async (symbol, date) => {
   const options = {
     method: 'GET',
@@ -22,6 +25,7 @@ const fetchClosingPrice = async (symbol, date) => {
       'APCA-API-KEY-ID': process.env.ALPACA_API_KEY,
       'APCA-API-SECRET-KEY': process.env.ALPACA_SECRET_KEY,
     },
+    rejectUnauthorized: false // This will bypass SSL certificate validation
   };
 
   return new Promise((resolve, reject) => {
@@ -71,7 +75,7 @@ app.get('/api/stock/price', async (req, res) => {
 
 app.post('/api/stock/price', async (req, res) => {
   try {
-    const { symbol, date } = req.body;
+    const { symbol, date, quantity = 0 } = req.body;
 
     if (!symbol || !date) {
       return res.status(400).json({
@@ -80,12 +84,28 @@ app.post('/api/stock/price', async (req, res) => {
     }
 
     const closingPrice = await fetchClosingPrice(symbol, date);
-    res.json({ symbol, date, closingPrice });
+    
+    // Store the data in portfolio
+    portfolio[symbol] = {
+      symbol,
+      date,
+      closingPrice,
+      quantity: Number(quantity),
+      totalValue: closingPrice * Number(quantity),
+      lastUpdated: new Date().toISOString()
+    };
+
+    res.json({
+      message: 'Stock data stored successfully',
+      data: portfolio[symbol]
+    });
   } catch (error) {
     console.error('Error fetching stock price:', error);
     res.status(500).json({ error: 'Failed to fetch stock price' });
   }
 });
+
+
 
 
 const PORT = process.env.PORT || 5000;
