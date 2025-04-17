@@ -106,7 +106,43 @@ app.post('/api/stock/price', async (req, res) => {
 });
 
 
+app.get('/api/portfolio', (req, res) => {
+  res.json(portfolio);
+});
 
+
+app.put('/api/portfolio/:symbol', async (req, res) => {
+  try {
+    const { symbol } = req.params;
+    const { quantity, date } = req.body;
+
+    if (!quantity || isNaN(quantity)) {
+      return res.status(400).json({
+        error: 'Valid quantity is required'
+      });
+    }
+
+    // Get current price for the stock
+    const currentDate = date || new Date().toISOString().split('T')[0];
+    const currentPrice = await fetchClosingPrice(symbol, currentDate);
+
+    // Update portfolio
+    portfolio[symbol] = {
+      quantity: Number(quantity),
+      lastUpdated: currentDate,
+      currentPrice: currentPrice,
+      totalValue: currentPrice * Number(quantity)
+    };
+
+    res.json({
+      message: 'Portfolio updated successfully',
+      stock: portfolio[symbol]
+    });
+  } catch (error) {
+    console.error('Error updating portfolio:', error);
+    res.status(500).json({ error: 'Failed to update portfolio' });
+  }
+});
 
 const PORT = process.env.PORT || 5000;
 
