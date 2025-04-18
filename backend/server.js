@@ -2,8 +2,9 @@ const express = require('express');
 const cors = require('cors');
 const dotenv = require('dotenv');
 const https = require('https');
-const mongoose = require('mongoose');
+// const mongoose = require('mongoose');
 const Portfolio = require('./models/portfolio');
+const connectDatabase= require('./database/db')
 
 dotenv.config();
 
@@ -13,7 +14,7 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-
+connectDatabase()
 
 const fetchClosingPrice = async (symbol, date) => {
   const options = {
