@@ -2,6 +2,7 @@ const express = require('express');
 const cors = require('cors');
 const dotenv = require('dotenv');
 const https = require('https');
+const bcrypt = require('bcrypt');
 // const mongoose = require('mongoose');
 const Portfolio = require('./models/portfolio');
 const User = require('./models/user');
@@ -73,12 +74,49 @@ app.get('/api/stock/price', async (req, res) => {
   }
 });
 
+// User endpoints
+app.post('/api/users', async (req, res) => {
+  try {
+    const { fullName, email, password } = req.body;
+    
+    if (!fullName || !email || !password) {
+      return res.status(400).json({ error: 'All fields are required' });
+    }
+
+    // Hash the password
+    const saltRounds = 10;
+    const hashedPassword = await bcrypt.hash(password, saltRounds);
+
+    const user = new User({
+      fullName,
+      email,
+      password: hashedPassword
+    });
+
+    await user.save();
+    res.status(201).json(user);
+  } catch (error) {
+    console.error('Error creating user:', error);
+    res.status(500).json({ error: 'Failed to create user' });
+  }
+});
+
+// Portfolio endpoints
 app.post('/api/portfolio', async (req, res) => {
   try {
     const { symbol, date, quantity, userId } = req.body;
 
     if (!symbol || !date || !userId) {
       return res.status(400).json({ error: 'Symbol, date, and userId are required' });
+    }
+
+    if (quantity === undefined || quantity === null) {
+      return res.status(400).json({ error: 'Quantity is required' });
+    }
+
+    const quantityNum = Number(quantity);
+    if (isNaN(quantityNum)) {
+      return res.status(400).json({ error: 'Quantity must be a valid number' });
     }
 
     const closingPrice = await fetchClosingPrice(symbol, date);
@@ -90,8 +128,8 @@ app.post('/api/portfolio', async (req, res) => {
         symbol,
         date: new Date(date),
         closingPrice,
-        quantity: Number(quantity),
-        totalValue: closingPrice * Number(quantity),
+        quantity: quantityNum,
+        totalValue: closingPrice * quantityNum,
         lastUpdated: new Date()
       },
       { upsert: true, new: true }
@@ -125,10 +163,17 @@ app.put('/api/portfolio/:symbol', async (req, res) => {
     const { symbol } = req.params;
     const { quantity, date, userId } = req.body;
 
-    if (!quantity || isNaN(quantity) || !userId) {
-      return res.status(400).json({
-        error: 'Valid quantity and userId are required'
-      });
+    if (!userId) {
+      return res.status(400).json({ error: 'userId is required' });
+    }
+
+    if (quantity === undefined || quantity === null) {
+      return res.status(400).json({ error: 'Quantity is required' });
+    }
+
+    const quantityNum = Number(quantity);
+    if (isNaN(quantityNum)) {
+      return res.status(400).json({ error: 'Quantity must be a valid number' });
     }
 
     const currentDate = date || new Date().toISOString().split('T')[0];
@@ -137,9 +182,9 @@ app.put('/api/portfolio/:symbol', async (req, res) => {
     const updatedPortfolio = await Portfolio.findOneAndUpdate(
       { user: userId, symbol, date: new Date(currentDate) },
       {
-        quantity: Number(quantity),
+        quantity: quantityNum,
         closingPrice: closingPrice,
-        totalValue: closingPrice * Number(quantity),
+        totalValue: closingPrice * quantityNum,
         lastUpdated: new Date()
       },
       { upsert: true, new: true }
@@ -178,29 +223,6 @@ app.delete('/api/portfolio/:symbol', async (req, res) => {
   } catch (error) {
     console.error('Error removing stock:', error);
     res.status(500).json({ error: 'Failed to remove stock' });
-  }
-});
-
-// User endpoints
-app.post('/api/users', async (req, res) => {
-  try {
-    const { fullName, email, password } = req.body;
-    
-    if (!fullName || !email || !password) {
-      return res.status(400).json({ error: 'All fields are required' });
-    }
-
-    const user = new User({
-      fullName,
-      email,
-      password
-    });
-
-    await user.save();
-    res.status(201).json(user);
-  } catch (error) {
-    console.error('Error creating user:', error);
-    res.status(500).json({ error: 'Failed to create user' });
   }
 });
 
