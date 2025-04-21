@@ -1,6 +1,11 @@
 const mongoose = require('mongoose');
 
 const portfolioSchema = new mongoose.Schema({
+  user: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User',
+    required: true
+  },
   symbol: {
     type: String,
     required: true,
@@ -30,8 +35,8 @@ const portfolioSchema = new mongoose.Schema({
   timestamps: true
 });
 
-// Create a compound index on symbol and date
-portfolioSchema.index({ symbol: 1, date: 1 }, { unique: true });
+// Create a compound index on user, symbol and date
+portfolioSchema.index({ user: 1, symbol: 1, date: 1 }, { unique: true });
 
 const Portfolio = mongoose.model('Portfolio', portfolioSchema);
 

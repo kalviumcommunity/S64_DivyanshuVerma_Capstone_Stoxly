@@ -4,6 +4,7 @@ const dotenv = require('dotenv');
 const https = require('https');
 // const mongoose = require('mongoose');
 const Portfolio = require('./models/portfolio');
+const User = require('./models/user');
 const connectDatabase= require('./database/db')
 
 dotenv.config();
@@ -14,7 +15,7 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-connectDatabase()
+connectDatabase();
 
 const fetchClosingPrice = async (symbol, date) => {
   const options = {
@@ -53,7 +54,7 @@ const fetchClosingPrice = async (symbol, date) => {
   });
 };
 
-
+// GET endpoint for stock price
 app.get('/api/stock/price', async (req, res) => {
   try {
     const { symbol, date } = req.query;
@@ -72,23 +73,20 @@ app.get('/api/stock/price', async (req, res) => {
   }
 });
 
-
-app.post('/api/stock/price', async (req, res) => {
+app.post('/api/portfolio', async (req, res) => {
   try {
-    const { symbol, date, quantity = 0 } = req.body;
+    const { symbol, date, quantity, userId } = req.body;
 
-    if (!symbol || !date) {
-      return res.status(400).json({
-        error: 'Symbol and date are required in the request body'
-      });
+    if (!symbol || !date || !userId) {
+      return res.status(400).json({ error: 'Symbol, date, and userId are required' });
     }
 
     const closingPrice = await fetchClosingPrice(symbol, date);
-    
 
     const portfolioEntry = await Portfolio.findOneAndUpdate(
-      { symbol, date: new Date(date) },
+      { user: userId, symbol, date: new Date(date) },
       {
+        user: userId,
         symbol,
         date: new Date(date),
         closingPrice,
@@ -99,20 +97,22 @@ app.post('/api/stock/price', async (req, res) => {
       { upsert: true, new: true }
     );
 
-    res.json({
-      message: 'Stock data stored successfully',
-      data: portfolioEntry
-    });
+    res.json(portfolioEntry);
   } catch (error) {
-    console.error('Error storing stock data:', error);
-    res.status(500).json({ error: 'Failed to store stock data' });
+    console.error('Error storing portfolio data:', error);
+    res.status(500).json({ error: 'Failed to store portfolio data' });
   }
 });
 
-
 app.get('/api/portfolio', async (req, res) => {
   try {
-    const portfolio = await Portfolio.find().sort({ date: -1 });
+    const { userId } = req.query;
+    
+    if (!userId) {
+      return res.status(400).json({ error: 'userId is required' });
+    }
+
+    const portfolio = await Portfolio.find({ user: userId }).sort({ date: -1 });
     res.json(portfolio);
   } catch (error) {
     console.error('Error fetching portfolio:', error);
@@ -120,25 +120,22 @@ app.get('/api/portfolio', async (req, res) => {
   }
 });
 
-
 app.put('/api/portfolio/:symbol', async (req, res) => {
   try {
     const { symbol } = req.params;
-    const { quantity, date } = req.body;
+    const { quantity, date, userId } = req.body;
 
-    if (!quantity || isNaN(quantity)) {
+    if (!quantity || isNaN(quantity) || !userId) {
       return res.status(400).json({
-        error: 'Valid quantity is required'
+        error: 'Valid quantity and userId are required'
       });
     }
 
-    // Get current price for the stock
     const currentDate = date || new Date().toISOString().split('T')[0];
     const closingPrice = await fetchClosingPrice(symbol, currentDate);
 
-    // Update portfolio
     const updatedPortfolio = await Portfolio.findOneAndUpdate(
-      { symbol, date: new Date(currentDate) },
+      { user: userId, symbol, date: new Date(currentDate) },
       {
         quantity: Number(quantity),
         closingPrice: closingPrice,
@@ -158,13 +155,16 @@ app.put('/api/portfolio/:symbol', async (req, res) => {
   }
 });
 
-
 app.delete('/api/portfolio/:symbol', async (req, res) => {
   try {
     const { symbol } = req.params;
-    const { date } = req.query;
+    const { date, userId } = req.query;
 
-    const query = { symbol };
+    if (!userId) {
+      return res.status(400).json({ error: 'userId is required' });
+    }
+
+    const query = { user: userId, symbol };
     if (date) {
       query.date = new Date(date);
     }
@@ -178,6 +178,29 @@ app.delete('/api/portfolio/:symbol', async (req, res) => {
   } catch (error) {
     console.error('Error removing stock:', error);
     res.status(500).json({ error: 'Failed to remove stock' });
+  }
+});
+
+// User endpoints
+app.post('/api/users', async (req, res) => {
+  try {
+    const { fullName, email, password } = req.body;
+    
+    if (!fullName || !email || !password) {
+      return res.status(400).json({ error: 'All fields are required' });
+    }
+
+    const user = new User({
+      fullName,
+      email,
+      password
+    });
+
+    await user.save();
+    res.status(201).json(user);
+  } catch (error) {
+    console.error('Error creating user:', error);
+    res.status(500).json({ error: 'Failed to create user' });
   }
 });
 
