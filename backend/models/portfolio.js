@@ -22,7 +22,7 @@ const portfolioSchema = new mongoose.Schema({
   quantity: {
     type: Number,
     min: 1,
-    default: 0
+    default: 1
   },
   totalValue: {
     type: Number,

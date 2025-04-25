@@ -21,7 +21,7 @@ const Model = () => {
 
   useFrame(() => {
     if (modelRef.current) {
-      modelRef.current.rotation.y += 0.003;
+      modelRef.current.rotation.y += 0.001;
     }
   });
 
@@ -41,8 +41,8 @@ const Hero3DScene = () => {
         gl={{ 
           powerPreference: "high-performance", 
           antialias: true,
-          outputEncoding: 'sRGB',
-          toneMapping: 'ACESFilmic',
+          outputEncoding: THREE.sRGB,
+          toneMapping: THREE.ACESFilmic,
           toneMappingExposure: 1.5
         }}
         style={{ background: "#000" }}
@@ -91,3 +91,4 @@ const Hero3DScene = () => {
 useGLTF.preload("/colored_coins.glb");
 
 export default Hero3DScene;
+ 
