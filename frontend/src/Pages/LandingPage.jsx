@@ -8,7 +8,7 @@ import Lenis from 'lenis';
 import CubeeModel from '../components/CubeeModel';
 import IconStrip from '../components/IconStrip';
 import { FaTwitter, FaLinkedinIn, FaGithub } from 'react-icons/fa';
-import ScrollFloat from '../components/ScrollFloat';
+// import ScrollFloat from '../components/ScrollFloat';
 
 const LandingPage = () => {
   useEffect(()=>{
