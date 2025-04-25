@@ -1,0 +1,1109 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Poppins', sans-serif;
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  min-height: 100vh;
+  background-color: #000;
+  color: #fff;
+  overflow-x: hidden;
+}
+
+.landing-container {
+  min-height: 100vh;
+  width: 100vw;
+  max-width: 100%;
+  background-color: #000;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  margin: 0;
+  padding: 0;
+}
+
+/* Navigation Bar */
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.8rem 2rem;
+  width: 90%;
+  max-width: 1200px;
+  background: rgba(13, 12, 15, 0.7);
+  background-color: rgba(0, 0, 0, 0.8);
+  box-shadow: 0 0 25px rgba(255, 153, 0, 0.3);
+  backdrop-filter: blur(5px);
+  -webkit-backdrop-filter: blur(5px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 100px;
+  position: fixed;
+  top: 1rem;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 1000;
+  transition: box-shadow 0.3s ease-in-out;
+}
+
+/* Enhanced glowing effect */
+.navbar::before {
+  content: '';
+  position: absolute;
+  top: -1px;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 107, 0, 0.1),
+    rgba(255, 107, 0, 0.2),
+    rgba(255, 107, 0, 0.3),
+    rgba(255, 107, 0, 0.2),
+    rgba(255, 107, 0, 0.1),
+    transparent
+  );
+  border-radius: 100px;
+}
+
+.navbar::after {
+  content: '';
+  position: absolute;
+  top: -20px;
+  left: 0;
+  right: 0;
+  height: 20px;
+  background: radial-gradient(
+    ellipse at top,
+    rgba(255, 107, 0, 0.15),
+    transparent 70%
+  );
+  pointer-events: none;
+}
+
+.logo-container {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  position: relative;
+  z-index: 1;
+}
+
+.logo-icon {
+  margin-right: 0.5rem;
+  filter: drop-shadow(0 0 10px rgba(255, 107, 0, 0.8));
+}
+
+.logo-text {
+  font-size: 1.3rem;
+  font-weight: 600;
+  color: #FF6B00;
+  text-shadow: 0 0 15px rgba(255, 107, 0, 0.3);
+  letter-spacing: 0.5px;
+}
+
+.nav-links {
+  display: flex;
+  gap: 2rem;
+  position: relative;
+  z-index: 1;
+}
+
+.nav-links a {
+  color: rgba(255, 255, 255, 0.8);
+  text-decoration: none;
+  font-size: 0.9rem;
+  font-weight: 500;
+  letter-spacing: 0.3px;
+  transition: all 0.3s ease;
+  position: relative;
+  padding: 0.3rem 0;
+}
+
+.nav-links a:hover {
+  color: #FF6B00;
+  text-shadow: 0 0 20px rgba(255, 107, 0, 0.4);
+}
+
+.nav-links a::before {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 0;
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    #FF6B00,
+    transparent
+  );
+  transition: width 0.3s ease;
+}
+
+.nav-links a:hover::before {
+  width: 100%;
+}
+
+.start-trading-btn {
+  background: rgba(255, 107, 0, 0.15);
+  border: 1px solid rgba(255, 107, 0, 0.3);
+  color: #FF6B00;
+  padding: 0.5rem 1.2rem;
+  border-radius: 100px;
+  text-decoration: none;
+  font-weight: 500;
+  font-size: 0.9rem;
+  letter-spacing: 0.3px;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.start-trading-btn:hover {
+  background: rgba(255, 107, 0, 0.25);
+  border-color: rgba(255, 107, 0, 0.5);
+  box-shadow: 0 0 20px rgba(255, 107, 0, 0.2);
+  transform: translateY(-1px);
+  color: #fff;
+}
+
+.mobile-menu-btn {
+  display: none;
+  flex-direction: column;
+  cursor: pointer;
+}
+
+.bar {
+  width: 25px;
+  height: 3px;
+  background-color: #fff;
+  margin: 3px 0;
+  transition: all 0.3s ease;
+}
+
+/* Hero Section */
+.hero-section {
+  position: relative;
+  width: 100%;
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  padding: 0 7%;
+  margin-top: 0;
+  overflow: hidden;
+}
+
+.hero-content {
+  max-width: 600px;
+  position: relative;
+  z-index: 2;
+}
+
+.main-heading {
+  font-size: 4rem;
+  font-weight: 700;
+  margin-bottom: 1.5rem;
+  background: linear-gradient(to right, #fff, #ffa149);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  line-height: 1.2;
+}
+
+.sub-heading {
+  font-size: 1.1rem;
+  font-weight: 300;
+  color: rgba(255, 255, 255, 0.7);
+  max-width: 540px;
+  margin-bottom: 3rem;
+  line-height: 1.6;
+}
+
+.cta-buttons {
+  display: flex;
+  gap: 1.5rem;
+  margin-bottom: 0;
+}
+
+.sign-up-btn {
+  background: #FF6B00;
+  padding: 1rem 2.5rem;
+  text-decoration: none;
+  font-weight: 500;
+  font-size: 1rem;
+  color: #fff;
+  border-radius: 8px;
+  border: none;
+  letter-spacing: 0.3px;
+  transition: all 0.3s ease;
+  box-shadow: 0 0 25px rgba(255, 107, 0, 0.3);
+}
+
+.sign-up-btn:hover {
+  background: #ff7b1a;
+  transform: translateY(-2px);
+  box-shadow: 0 0 30px rgba(255, 107, 0, 0.4);
+}
+
+.live-demo-btn {
+  background: transparent;
+  padding: 1rem 2.5rem;
+  text-decoration: none;
+  font-weight: 500;
+  font-size: 1rem;
+  color: #fff;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  letter-spacing: 0.3px;
+  transition: all 0.3s ease;
+}
+
+.live-demo-btn:hover {
+  border-color: rgba(255, 255, 255, 0.4);
+  background: rgba(255, 255, 255, 0.05);
+}
+
+/* 3D Model Container */
+.hero-3d-container {
+  position: absolute;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 50%;
+  height: 100%;
+  z-index: 1;
+}
+
+/* Second Section */
+.hero-section2 {
+  width: 100%;
+  min-height: 100vh;
+  background-color: #000;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 0;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Optimize background glow effects */
+.hero-section2::before {
+  content: '';
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(
+    circle at center,
+    rgba(255, 107, 0, 0.15) 0%,
+    rgba(255, 107, 0, 0.08) 25%,
+    rgba(255, 107, 0, 0.03) 50%,
+    transparent 70%
+  );
+  top: 0;
+  left: 0;
+  z-index: 1;
+  filter: blur(60px);
+  pointer-events: none;
+  opacity: 0.8;
+}
+
+/* Additional ambient glow */
+.hero-section2::after {
+  content: '';
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  background: 
+    radial-gradient(circle at 30% 20%, rgba(255, 107, 0, 0.1) 0%, transparent 50%),
+    radial-gradient(circle at 70% 80%, rgba(255, 107, 0, 0.1) 0%, transparent 50%);
+  top: 0;
+  left: 0;
+  z-index: 1;
+  pointer-events: none;
+}
+
+.trading-interface {
+  width: 100%;
+  height: 100vh;
+  position: relative;
+  z-index: 3;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 0 5%;
+}
+
+.trading-header {
+  text-align: center;
+  margin-bottom: 4rem;
+}
+
+.trading-title {
+  font-size: 3.5rem;
+  font-weight: 600;
+  margin: 1rem 0;
+  background: linear-gradient(to right, #fff, #ffa149);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.trading-subtitle {
+  color: #FF6B00;
+  font-size: 1rem;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  margin-bottom: 1rem;
+}
+
+.trading-description {
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 1.1rem;
+  max-width: 600px;
+  margin: 0 auto;
+  line-height: 1.6;
+}
+
+.trading-dashboard {
+  width: 100%;
+  max-width: 1400px;
+ 
+  padding: 3rem;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 3rem;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Enhanced glassmorphism glow effects */
+
+.price-section, .tools-section {
+  background: rgba(20, 20, 25, 0.3);
+  border-radius: 20px;
+  padding: 2rem;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  position: relative;
+  z-index: 1;
+  backdrop-filter: blur(5px);
+  -webkit-backdrop-filter: blur(5px);
+  box-shadow: 
+    0 4px 24px -1px rgba(0, 0, 0, 0.2),
+    inset 0 0 20px rgba(255, 107, 0, 0.02);
+}
+
+.price-section::before, .tools-section::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 20px;
+  padding: 1px;
+  background: linear-gradient(
+    135deg,
+    rgba(255, 107, 0, 0.2),
+    rgba(255, 255, 255, 0.1),
+    rgba(255, 107, 0, 0.2)
+  );
+  -webkit-mask: 
+    linear-gradient(#fff 0 0) content-box, 
+    linear-gradient(#fff 0 0);
+  mask: 
+    linear-gradient(#fff 0 0) content-box, 
+    linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+}
+
+.price-item {
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 12px;
+  padding: 1rem;
+  transition: all 0.3s ease;
+  backdrop-filter: blur(5px);
+  -webkit-backdrop-filter: blur(5px);
+}
+
+.price-item:hover {
+  background: rgba(255, 107, 0, 0.1);
+  transform: translateX(5px);
+  border-color: rgba(255, 107, 0, 0.2);
+  box-shadow: 0 0 20px rgba(255, 107, 0, 0.1);
+}
+
+.coin-info {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.coin-icon {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: rgba(255, 107, 0, 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.coin-name {
+  color: #fff;
+  font-weight: 500;
+}
+
+.coin-price {
+  color: #FF6B00;
+  font-weight: 600;
+}
+
+.price-change {
+  font-size: 0.9rem;
+  color: #64DD17;
+}
+
+.price-change.negative {
+  color: #FF5252;
+}
+
+.tools-section {
+  display: flex;
+  flex-direction: column;
+}
+
+.chart-container {
+  background: rgba(255, 107, 0, 0.03);
+  border: 1px solid rgba(255, 107, 0, 0.1);
+  border-radius: 16px;
+  padding: 1.5rem;
+  position: relative;
+  backdrop-filter: blur(5px);
+  -webkit-backdrop-filter: blur(5px);
+}
+
+.price-value {
+  font-size: 2rem;
+  font-weight: 600;
+  color: #FF6B00;
+  margin-bottom: 1rem;
+  text-shadow: 0 0 20px rgba(255, 107, 0, 0.2);
+}
+
+.chart-line {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  background: linear-gradient(90deg, #FF6B00, transparent);
+}
+
+@media (max-width: 1200px) {
+  .main-heading {
+    font-size: 3.5rem;
+  }
+  
+  .hero-content {
+    max-width: 500px;
+  }
+}
+
+@media (max-width: 968px) {
+  .hero-section {
+    flex-direction: column;
+    padding-top: 8rem;
+    height: auto;
+    min-height: 100vh;
+    text-align: center;
+  }
+
+  .hero-content {
+    max-width: 600px;
+    margin: 0 auto;
+  }
+
+  .sub-heading {
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .cta-buttons {
+    justify-content: center;
+  }
+
+  .hero-3d-container {
+    position: relative;
+    width: 100%;
+    height: 50vh;
+    margin-top: 3rem;
+    transform: none;
+  }
+
+  .main-heading {
+    font-size: 3rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .hero-section {
+    padding: 7rem 1.5rem 3rem;
+  }
+
+  .main-heading {
+    font-size: 2.5rem;
+  }
+
+  .cta-buttons {
+    flex-direction: column;
+    width: 100%;
+    gap: 1rem;
+  }
+
+  .sign-up-btn, .live-demo-btn {
+    width: 100%;
+    text-align: center;
+  }
+
+  .hero-3d-container {
+    height: 40vh;
+  }
+}
+
+.canvas-container {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100vh;
+  z-index: 0;
+  pointer-events: none;
+}
+
+/* Add this at the end of your file */
+@property --mouse-x {
+  syntax: '<percentage>';
+  initial-value: 50%;
+  inherits: false;
+}
+
+@property --mouse-y {
+  syntax: '<percentage>';
+  initial-value: 50%;
+  inherits: false;
+}
+
+/* Add hardware acceleration for smoother animations */
+.price-item,
+.sign-up-btn,
+.live-demo-btn,
+.start-trading-btn {
+  transform: translateZ(0);
+  will-change: transform;
+}
+
+/* Third Section - Crypto Universe */
+.hero-section3 {
+  width: 100%;
+  min-height: 100vh;
+  background-color: #000;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 4rem 2rem;
+  position: relative;
+  overflow: hidden;
+}
+
+.universe-interface {
+  width: 100%;
+  max-width: 1400px;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6rem;
+  position: relative;
+}
+
+.crypto-icons-container {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 7rem;
+  position: relative;
+  min-height: 500px;
+  padding-top: 0;
+}
+
+/* Background glow for the crypto section */
+.hero-section3::before {
+  content: '';
+  position: absolute;
+  width: 140%;
+  height: 140%;
+  background: radial-gradient(
+    circle at center,
+    rgba(255, 107, 0, 0.15) 0%,
+    rgba(255, 107, 0, 0.05) 30%,
+    transparent 70%
+  );
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  filter: blur(60px);
+  z-index: 0;
+}
+
+.universe-header {
+  text-align: center;
+  max-width: 800px;
+}
+
+.universe-subtitle {
+  color: #FF6B00;
+  font-size: 1rem;
+  font-weight: 600;
+  letter-spacing: 2px;
+  margin-bottom: 1rem;
+}
+
+.universe-title {
+  font-size: 4rem;
+  font-weight: 700;
+  background: linear-gradient(to right, #fff, #ffa149);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: 1.5rem;
+}
+
+.universe-description {
+  font-size: 1.1rem;
+  color: rgba(255, 255, 255, 0.7);
+  line-height: 1.6;
+}
+
+.icons-row {
+  display: flex;
+  justify-content: center;
+  gap: 3rem;
+  width: 100%;
+  position: relative;
+  z-index: 3;
+}
+
+.crypto-icon {
+  width: 40px;
+  height: 40px;
+  background: rgba(255, 107, 0, 0.1);
+  border: 1px solid rgba(255, 107, 0, 0.2);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.2rem;
+  color: #FF6B00;
+  transition: all 0.3s ease;
+  animation: float 3s ease-in-out infinite;
+}
+
+.crypto-icon:hover {
+  transform: translateY(-5px);
+  background: rgba(255, 107, 0, 0.2);
+  border-color: rgba(255, 107, 0, 0.4);
+  box-shadow: 0 0 20px rgba(255, 107, 0, 0.3);
+}
+
+.ethereum-container {
+  position: relative;
+  width: 200px;
+  height: 200px;
+  margin: -2rem 0;
+}
+
+.ethereum-cube {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  transform-style: preserve-3d;
+  animation: rotate 20s linear infinite;
+  background: rgba(255, 107, 0, 0.1);
+  border: 2px solid rgba(255, 107, 0, 0.3);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  box-shadow: 0 0 50px rgba(255, 107, 0, 0.2);
+}
+
+.eth-icon {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 4rem;
+  color: #FF6B00;
+  text-shadow: 0 0 20px rgba(255, 107, 0, 0.5);
+}
+
+/* Animations */
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+@keyframes rotate {
+  from {
+    transform: rotateY(0deg) rotateX(15deg);
+  }
+  to {
+    transform: rotateY(360deg) rotateX(15deg);
+  }
+}
+
+/* Add glow effect behind the ethereum cube */
+.ethereum-container::before {
+  content: '';
+  position: absolute;
+  width: 300px;
+  height: 300px;
+  background: radial-gradient(
+    circle,
+    rgba(255, 107, 0, 0.2) 0%,
+    rgba(255, 107, 0, 0.1) 30%,
+    transparent 70%
+  );
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  filter: blur(50px);
+  z-index: -1;
+}
+
+/* Responsive styles for the universe section */
+@media (max-width: 768px) {
+  .universe-title {
+    font-size: 3rem;
+  }
+
+  .icons-row {
+    gap: 2rem;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .crypto-icon {
+    width: 35px;
+    height: 35px;
+    font-size: 1rem;
+  }
+
+  .ethereum-container {
+    width: 150px;
+    height: 150px;
+  }
+
+  .eth-icon {
+    font-size: 3rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .universe-title {
+    font-size: 2.5rem;
+  }
+
+  .icons-row {
+    gap: 1.5rem;
+  }
+
+  .crypto-icon {
+    width: 30px;
+    height: 30px;
+    font-size: 0.9rem;
+  }
+
+  .ethereum-container {
+    width: 120px;
+    height: 120px;
+  }
+
+  .eth-icon {
+    font-size: 2.5rem;
+  }
+}
+
+/* Optimized Hero Section 4 */
+.hero-section4 {
+  min-height: 100vh;
+  width: 100%;
+  background-color: #000;
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4rem 2rem;
+}
+
+.dashboard-showcase {
+  width: 100%;
+  max-width: 1400px;
+  margin: 0 auto;
+  position: relative;
+  z-index: 2;
+}
+
+.hero-section4 .section-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3rem;
+  text-align: center;
+}
+
+.hero-section4 .text-content {
+  max-width: 800px;
+}
+
+.hero-section4 .section-subtitle {
+  color: #FF6B00;
+  font-size: 1rem;
+  font-weight: 600;
+  letter-spacing: 2px;
+  margin-bottom: 1rem;
+}
+
+.hero-section4 .section-title {
+  font-size: 3.5rem;
+  font-weight: 700;
+  background: linear-gradient(to right, #fff, #ffa149);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: 1.5rem;
+  line-height: 1.2;
+}
+
+.hero-section4 .section-description {
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 1.1rem;
+  line-height: 1.6;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.dashboard-preview {
+  width: 100%;
+  position: relative;
+  padding: 2rem;
+}
+
+.dashboard-image {
+  position: relative;
+  border-radius: 20px;
+  overflow: hidden;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+  transform: translateZ(0);
+  will-change: transform;
+}
+
+.dashboard-image img {
+  width: 100%;
+  height: 550px;
+  display: block;
+  border-radius: 20px;
+  position: relative;
+  z-index: 2;
+  object-fit: cover;
+}
+
+/* Simplified glow effect */
+.glow-effect {
+  position: absolute;
+  inset: -20px;
+  background: radial-gradient(
+    circle at 50% 50%,
+    rgba(255, 107, 0, 0.2),
+    transparent 70%
+  );
+  filter: blur(20px);
+  z-index: 1;
+  pointer-events: none;
+}
+
+/* Optimized Footer */
+.footer {
+  width: 100%;
+  padding: 4rem 2rem;
+  color: #fff;
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(
+    to bottom,
+    #000 0%,
+    rgba(0, 0, 0, 0.95) 40%,
+    rgba(0, 0, 0, 0.9) 100%
+  );
+  transform: translateZ(0);
+  will-change: transform;
+}
+
+/* Simplified footer glow */
+.footer::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    to bottom,
+    transparent 0%,
+    rgba(255, 107, 0, 0.05) 30%,
+    rgba(255, 107, 0, 0.1) 60%,
+    rgba(255, 107, 0, 0.15) 100%
+  );
+  pointer-events: none;
+  z-index: 0;
+  opacity: 0.8;
+}
+
+.footer-container {
+  position: relative;
+  z-index: 1;
+  max-width: 1200px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 2fr repeat(3, 1fr);
+  gap: 4rem;
+  transform: translateZ(0);
+  will-change: transform;
+}
+
+.footer-column h3 {
+  color: #fff;
+  font-size: 1.2rem;
+  margin-bottom: 1.5rem;
+  font-weight: 600;
+}
+
+.footer-logo {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.footer-logo span {
+  font-size: 1.5rem;
+  font-weight: 600;
+  background: linear-gradient(45deg, #FF6B00, #FF8E3C);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  text-shadow: 0 0 20px rgba(255, 107, 0, 0.3);
+}
+
+.footer-social {
+  display: flex;
+  gap: 1rem;
+  margin-top: 2rem;
+}
+
+.social-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  transition: all 0.3s ease;
+  position: relative;
+  transform: translateZ(0);
+  will-change: transform;
+}
+
+.social-icon:hover {
+  background: #FF6B00;
+  transform: translateY(-2px);
+  box-shadow: 0 0 15px rgba(255, 107, 0, 0.4);
+}
+
+.footer-links {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.footer-links a {
+  color: rgba(255, 255, 255, 0.7);
+  text-decoration: none;
+  transition: color 0.3s ease;
+}
+
+.footer-links a:hover {
+  color: #FF6B00;
+}
+
+.footer-bottom {
+  position: relative;
+  z-index: 1;
+  margin-top: 4rem;
+  padding-top: 2rem;
+  text-align: center;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  color: rgba(255, 255, 255, 0.7);
+  transform: translateZ(0);
+  will-change: transform;
+}
+
+/* Simplified bottom border glow */
+.footer-bottom::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 107, 0, 0.3),
+    transparent
+  );
+  filter: blur(1px);
+}
+
+/* Responsive styles */
+@media (max-width: 1024px) {
+  .footer-container {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 3rem;
+  }
+}
+
+@media (max-width: 640px) {
+  .footer-container {
+    grid-template-columns: 1fr;
+    gap: 2rem;
+  }
+  
+  .footer {
+    padding: 3rem 1.5rem;
+  }
+}
