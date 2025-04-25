@@ -129,9 +129,9 @@ const LandingPage = () => {
       <div className="hero-section3">
         <div className="universe-interface">
           <div className="universe-header">
-            <ScrollFloat containerClassName="universe-subtitle">
+            {/* <ScrollFloat containerClassName="universe-subtitle">
               THE CRYPTO UNIVERSE
-            </ScrollFloat>
+            </ScrollFloat> */}
             <h2 className="universe-title">Entire Crypto Universe</h2>
             <p className="universe-description">
               Experience the comprehensive selection of cryptocurrencies available on our platform. 
