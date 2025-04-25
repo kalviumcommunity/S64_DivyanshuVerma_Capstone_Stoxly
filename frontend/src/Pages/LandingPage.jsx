@@ -1,3 +1,4 @@
+// src/components/LandingPage.jsx
 "use client"
 import React, { useEffect } from 'react';
 import { Link } from 'react-router-dom';
@@ -8,6 +9,7 @@ import Lenis from 'lenis';
 import CubeeModel from '../components/CubeeModel';
 import IconStrip from '../components/IconStrip';
 import { FaTwitter, FaLinkedinIn, FaGithub } from 'react-icons/fa';
+import ScrollFloat from '../components/ScrollFloat';
 
 const LandingPage = () => {
   useEffect(()=>{
@@ -128,6 +130,9 @@ const LandingPage = () => {
       <div className="hero-section3">
         <div className="universe-interface">
           <div className="universe-header">
+            <ScrollFloat containerClassName="universe-subtitle">
+              THE CRYPTO UNIVERSE
+            </ScrollFloat>
             <h2 className="universe-title">Entire Crypto Universe</h2>
             <p className="universe-description">
               Experience the comprehensive selection of cryptocurrencies available on our platform. 
