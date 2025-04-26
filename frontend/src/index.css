@@ -5,7 +5,7 @@
 
   color-scheme: light dark;
   color: rgba(255, 255, 255, 0.87);
-  background-color: #242424;
+  background-color: #fd1616;
 
   font-synthesis: none;
   text-rendering: optimizeLegibility;
@@ -24,10 +24,10 @@ a:hover {
 
 body {
   margin: 0;
-  display: flex;
-  place-items: center;
-  min-width: 320px;
+  padding: 0;
+  background-color: #fd1616;
   min-height: 100vh;
+  width: 100%;
 }
 
 h1 {
@@ -65,4 +65,21 @@ button:focus-visible {
   button {
     background-color: #f9f9f9;
   }
+}
+
+/* Add IconStrip positioning for signup page */
+.signup-container .icon-strip.bottom {
+  bottom: 7%;
+}
+
+.signup-container .icon-strip.top {
+  top: 7%;
+}
+
+.login-container .icon-strip.bottom {
+  bottom: 7%;
+}
+
+.login-container .icon-strip.top {
+  top: 7%;
 }
