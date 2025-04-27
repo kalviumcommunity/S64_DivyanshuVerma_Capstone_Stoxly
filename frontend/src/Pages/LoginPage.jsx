@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import './LoginPage.css';
 import { FaEnvelope, FaLock, FaEye, FaEyeSlash } from 'react-icons/fa';
 import IconStrip from '../components/IconStrip';
@@ -12,6 +12,9 @@ const LoginPage = () => {
   
   const [showPassword, setShowPassword] = useState(false);
   const [formErrors, setFormErrors] = useState({});
+  const [isLoading, setIsLoading] = useState(false);
+  const [apiError, setApiError] = useState('');
+  const navigate = useNavigate();
   
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -37,14 +40,42 @@ const LoginPage = () => {
     return errors;
   };
   
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     const errors = validateForm();
     
     if (Object.keys(errors).length === 0) {
-      // Form is valid, proceed with login
-      console.log('Form submitted:', formData);
-      // Here you would typically call an API to authenticate the user
+      setIsLoading(true);
+      setApiError('');
+      
+      try {
+        const response = await fetch('http://localhost:5000/api/users/login', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            email: formData.email,
+            password: formData.password
+          }),
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+          throw new Error(data.error || 'Login failed');
+        }
+
+        // Store user data in localStorage
+        localStorage.setItem('user', JSON.stringify(data.user));
+
+        // Redirect to dashboard
+        navigate('/dashboard');
+      } catch (error) {
+        setApiError(error.message || 'An error occurred during login');
+      } finally {
+        setIsLoading(false);
+      }
     } else {
       setFormErrors(errors);
     }
@@ -60,6 +91,8 @@ const LoginPage = () => {
             <h2 className="form-title">Welcome Back</h2>
             <p className="form-subtitle">Sign in to access your portfolio</p>
           </div>
+          
+          {apiError && <div className="api-error-message">{apiError}</div>}
           
           <form className="login-form" onSubmit={handleSubmit}>
             <div className="form-group">
@@ -108,8 +141,12 @@ const LoginPage = () => {
               </Link>
             </div>
             
-            <button type="submit" className="login-button">
-              Sign In
+            <button 
+              type="submit" 
+              className="login-button"
+              disabled={isLoading}
+            >
+              {isLoading ? 'Signing In...' : 'Sign In'}
             </button>
           </form>
           

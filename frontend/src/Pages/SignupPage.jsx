@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import './SignupPage.css';
 import { FaUser, FaEnvelope, FaLock, FaEye, FaEyeSlash } from 'react-icons/fa';
 import IconStrip from '../components/IconStrip';
@@ -15,6 +15,9 @@ const SignupPage = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [formErrors, setFormErrors] = useState({});
+  const [isLoading, setIsLoading] = useState(false);
+  const [apiError, setApiError] = useState('');
+  const navigate = useNavigate();
   
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -50,14 +53,40 @@ const SignupPage = () => {
     return errors;
   };
   
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     const errors = validateForm();
     
     if (Object.keys(errors).length === 0) {
-      // Form is valid, proceed with signup
-      console.log('Form submitted:', formData);
-      // Here you would typically call an API to register the user
+      setIsLoading(true);
+      setApiError('');
+      
+      try {
+        const response = await fetch('http://localhost:5000/api/users', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            fullName: formData.name,
+            email: formData.email,
+            password: formData.password
+          }),
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+          throw new Error(data.error || 'Failed to create account');
+        }
+
+        // If successful, redirect to login page
+        navigate('/login');
+      } catch (error) {
+        setApiError(error.message || 'An error occurred during signup');
+      } finally {
+        setIsLoading(false);
+      }
     } else {
       setFormErrors(errors);
     }
@@ -73,6 +102,8 @@ const SignupPage = () => {
             <h2 className="form-title">Create Account</h2>
             <p className="form-subtitle">Join the revolution in stock portfolio management</p>
           </div>
+          
+          {apiError && <div className="api-error-message">{apiError}</div>}
           
           <form className="signup-form" onSubmit={handleSubmit}>
             <div className="form-group">
@@ -147,8 +178,12 @@ const SignupPage = () => {
               {formErrors.confirmPassword && <div className="error-message">{formErrors.confirmPassword}</div>}
             </div>
             
-            <button type="submit" className="signup-button">
-              Create Account
+            <button 
+              type="submit" 
+              className="signup-button"
+              disabled={isLoading}
+            >
+              {isLoading ? 'Creating Account...' : 'Create Account'}
             </button>
           </form>
           

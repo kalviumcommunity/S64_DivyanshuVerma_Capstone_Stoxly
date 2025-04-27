@@ -3,6 +3,7 @@ const cors = require('cors');
 const dotenv = require('dotenv');
 const https = require('https');
 const bcrypt = require('bcrypt');
+// const jwt = require('jsonwebtoken');
 // const mongoose = require('mongoose');
 const Portfolio = require('./models/portfolio');
 const User = require('./models/user');
@@ -12,8 +13,13 @@ dotenv.config();
 
 const app = express();
 
-// Middleware
-app.use(cors());
+// Configure CORS
+app.use(cors({
+  origin: 'http://localhost:5173', // Frontend URL
+  methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  credentials: true
+}));
+
 app.use(express.json());
 
 connectDatabase();
@@ -98,6 +104,43 @@ app.post('/api/users', async (req, res) => {
   } catch (error) {
     console.error('Error creating user:', error);
     res.status(500).json({ error: 'Failed to create user' });
+  }
+});
+
+// Login endpoint
+app.post('/api/users/login', async (req, res) => {
+  try {
+    const { email, password } = req.body;
+    
+    if (!email || !password) {
+      return res.status(400).json({ error: 'Email and password are required' });
+    }
+
+    const user = await User.findOne({ email });
+    
+    if (!user) {
+      return res.status(401).json({ error: 'Invalid email or password' });
+    }
+
+    const isPasswordValid = await bcrypt.compare(password, user.password);
+    
+    if (!isPasswordValid) {
+      return res.status(401).json({ error: 'Invalid email or password' });
+    }
+
+    // Return user data (excluding password)
+    const userData = {
+      _id: user._id,
+      fullName: user.fullName,
+      email: user.email
+    };
+
+    res.json({
+      user: userData
+    });
+  } catch (error) {
+    console.error('Error during login:', error);
+    res.status(500).json({ error: 'Failed to login' });
   }
 });
 
