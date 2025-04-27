@@ -80,7 +80,6 @@ const SignupPage = () => {
           throw new Error(data.error || 'Failed to create account');
         }
 
-        // If successful, redirect to login page
         navigate('/login');
       } catch (error) {
         setApiError(error.message || 'An error occurred during signup');

@@ -66,10 +66,8 @@ const LoginPage = () => {
           throw new Error(data.error || 'Login failed');
         }
 
-        // Store user data in localStorage
         localStorage.setItem('user', JSON.stringify(data.user));
 
-        // Redirect to dashboard
         navigate('/dashboard');
       } catch (error) {
         setApiError(error.message || 'An error occurred during login');
