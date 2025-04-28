@@ -3,19 +3,81 @@ const cors = require('cors');
 const dotenv = require('dotenv');
 const https = require('https');
 const bcrypt = require('bcrypt');
+const passport = require('passport');
+const GoogleStrategy = require('passport-google-oauth20').Strategy;
+const session = require('express-session');
 const Portfolio = require('./models/portfolio');
 const User = require('./models/user');
-const connectDatabase= require('./database/db')
+const connectDatabase = require('./database/db');
 
 dotenv.config();
 
 const app = express();
 
 app.use(cors({
-  origin: 'http://localhost:5173', 
+  origin: 'http://localhost:5173',
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
   credentials: true
 }));
+
+
+app.use(session({
+  secret: process.env.SESSION_SECRET || 'your-secret-key',
+  resave: false,
+  saveUninitialized: false,
+  cookie: {
+    secure: process.env.NODE_ENV === 'production',
+    maxAge: 24 * 60 * 60 * 1000
+  }
+}));
+
+
+app.use(passport.initialize());
+app.use(passport.session());
+
+
+passport.use(new GoogleStrategy({
+    clientID: process.env.GOOGLE_CLIENT_ID,
+    clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+    callbackURL: "http://localhost:5000/auth/google/callback"
+  },
+  async (accessToken, refreshToken, profile, done) => {
+    try {
+      let user = await User.findOne({ email: profile.emails[0].value });
+      
+      if (!user) {
+    
+        user = new User({
+          fullName: profile.displayName,
+          email: profile.emails[0].value,
+          authMethod: 'google',
+          providerId: profile.id,
+          profilePicture: profile.photos[0].value,
+          isVerified: true
+        });
+        await user.save();
+      }
+      
+      return done(null, user);
+    } catch (error) {
+      return done(error, null);
+    }
+  }
+));
+
+
+passport.serializeUser((user, done) => {
+  done(null, user.id);
+});
+
+passport.deserializeUser(async (id, done) => {
+  try {
+    const user = await User.findById(id);
+    done(null, user);
+  } catch (error) {
+    done(error, null);
+  }
+});
 
 app.use(express.json());
 
@@ -262,6 +324,17 @@ app.delete('/api/portfolio/:symbol', async (req, res) => {
     res.status(500).json({ error: 'Failed to remove stock' });
   }
 });
+
+app.get('/auth/google',
+  passport.authenticate('google', { scope: ['profile', 'email'] })
+);
+
+app.get('/auth/google/callback',
+  passport.authenticate('google', { failureRedirect: '/login' }),
+  (req, res) => {
+    res.redirect('http://localhost:5173/dashboard');
+  }
+);
 
 const PORT = process.env.PORT || 5000;
 

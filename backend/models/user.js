@@ -15,7 +15,23 @@ const userSchema = new mongoose.Schema({
   },
   password: {
     type: String,
-    required: true
+    sparse: true
+  },
+  authMethod: {
+    type: String,
+    enum: ['local', 'google'],
+    default: 'local'
+  },
+  providerId: {
+    type: String,
+    sparse: true 
+  },
+  profilePicture: {
+    type: String
+  },
+  isVerified: {
+    type: Boolean,
+    default: false
   }
 }, {
   timestamps: true

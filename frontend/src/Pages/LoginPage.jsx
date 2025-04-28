@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import './LoginPage.css';
-import { FaEnvelope, FaLock, FaEye, FaEyeSlash } from 'react-icons/fa';
+import { FaEnvelope, FaLock, FaEye, FaEyeSlash, FaGoogle } from 'react-icons/fa';
 import IconStrip from '../components/IconStrip';
 
 const LoginPage = () => {
@@ -78,6 +78,10 @@ const LoginPage = () => {
       setFormErrors(errors);
     }
   };
+
+  const handleGoogleSignIn = () => {
+    window.location.href = 'http://localhost:5000/auth/google';
+  };
   
   return (
     <div className="login-container">
@@ -145,6 +149,19 @@ const LoginPage = () => {
               disabled={isLoading}
             >
               {isLoading ? 'Signing In...' : 'Sign In'}
+            </button>
+
+            <div className="divider">
+              <span>OR</span>
+            </div>
+
+            <button 
+              type="button" 
+              className="google-signin-button"
+              onClick={handleGoogleSignIn}
+            >
+              <FaGoogle className="google-icon" />
+              Sign in with Google
             </button>
           </form>
           
