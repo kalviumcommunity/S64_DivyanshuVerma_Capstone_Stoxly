@@ -155,9 +155,14 @@ app.post('/api/users', async (req, res) => {
 
 // JWT authentication middleware
 function authenticateJWT(req, res, next) {
+  let token;
   const authHeader = req.headers.authorization;
   if (authHeader && authHeader.startsWith('Bearer ')) {
-    const token = authHeader.split(' ')[1];
+    token = authHeader.split(' ')[1];
+  } else if (req.cookies && req.cookies.token) {
+    token = req.cookies.token;
+  }
+  if (token) {
     jwt.verify(token, process.env.JWT_SECRET, (err, user) => {
       if (err) return res.sendStatus(403);
       req.user = user;
@@ -201,6 +206,14 @@ app.post('/api/users/login', async (req, res) => {
       { expiresIn: '7d' }
     );
 
+    // Set JWT as HTTP-only cookie
+    res.cookie('token', token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production', // true in production
+      sameSite: 'lax',
+      maxAge: 7 * 24 * 60 * 60 * 1000 // 7 days
+    });
+
     res.json({
       user: userData,
       token
@@ -221,14 +234,12 @@ app.post('/api/portfolio', authenticateJWT, async (req, res) => {
       return res.status(400).json({ error: 'Symbol, date, and userId are required' });
     }
 
-    if (quantity === undefined || quantity === null) {
-      return res.status(400).json({ error: 'Quantity is required' });
+    // Robust quantity validation
+    if (quantity === undefined || quantity === null || isNaN(Number(quantity)) || Number(quantity) <= 0) {
+      return res.status(400).json({ error: 'Quantity must be a positive number' });
     }
 
     const quantityNum = Number(quantity);
-    if (isNaN(quantityNum)) {
-      return res.status(400).json({ error: 'Quantity must be a valid number' });
-    }
 
     const closingPrice = await fetchClosingPrice(symbol, date);
 
@@ -277,14 +288,12 @@ app.put('/api/portfolio/:symbol', authenticateJWT, async (req, res) => {
       return res.status(400).json({ error: 'userId is required' });
     }
 
-    if (quantity === undefined || quantity === null) {
-      return res.status(400).json({ error: 'Quantity is required' });
+    // Robust quantity validation
+    if (quantity === undefined || quantity === null || isNaN(Number(quantity)) || Number(quantity) <= 0) {
+      return res.status(400).json({ error: 'Quantity must be a positive number' });
     }
 
     const quantityNum = Number(quantity);
-    if (isNaN(quantityNum)) {
-      return res.status(400).json({ error: 'Quantity must be a valid number' });
-    }
 
     const currentDate = date || new Date().toISOString().split('T')[0];
     const closingPrice = await fetchClosingPrice(symbol, currentDate);
@@ -350,14 +359,15 @@ app.get('/auth/google/callback',
       process.env.JWT_SECRET,
       { expiresIn: '7d' }
     );
-    // You can pass user info as well, but avoid sensitive data
-    const userData = encodeURIComponent(JSON.stringify({
-      _id: req.user._id,
-      fullName: req.user.fullName,
-      email: req.user.email
-    }));
-    // Redirect to frontend with token and user data in query params
-    res.redirect(`http://localhost:5173/dashboard?token=${token}&user=${userData}`);
+    // Set JWT as HTTP-only cookie
+    res.cookie('token', token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production', // true in production
+      sameSite: 'lax',
+      maxAge: 7 * 24 * 60 * 60 * 1000 // 7 days
+    });
+    // Redirect to frontend without token in URL
+    res.redirect('http://localhost:5173/dashboard');
   }
 );
 

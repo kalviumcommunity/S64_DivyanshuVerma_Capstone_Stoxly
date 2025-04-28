@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { FaBell, FaSearch, FaPlus, FaChartLine, FaNewspaper, FaStar, FaChartBar } from 'react-icons/fa';
 import './Dashboard.css';
@@ -11,13 +11,55 @@ const Dashboard = () => {
   const [addLoading, setAddLoading] = useState(false);
   const [addError, setAddError] = useState('');
   const [addSuccess, setAddSuccess] = useState('');
+  const [holdings, setHoldings] = useState([]);
+  const [holdingsLoading, setHoldingsLoading] = useState(true);
+  const [holdingsError, setHoldingsError] = useState('');
 
-  // Mock data for demonstration
-  const holdings = [
-    { symbol: 'AAPL', name: 'Apple Inc.', quantity: 10, purchasePrice: 150.25, currentPrice: 175.30 },
-    { symbol: 'GOOGL', name: 'Alphabet Inc.', quantity: 5, purchasePrice: 2800.50, currentPrice: 2950.75 },
-    { symbol: 'MSFT', name: 'Microsoft Corp.', quantity: 8, purchasePrice: 300.00, currentPrice: 320.25 },
-  ];
+  // Fetch real holdings on mount
+  useEffect(() => {
+    const fetchHoldings = async () => {
+      setHoldingsLoading(true);
+      setHoldingsError('');
+      try {
+        const res = await fetch('http://localhost:5000/api/portfolio', {
+          method: 'GET',
+          credentials: 'include',
+        });
+        if (!res.ok) {
+          const data = await res.json();
+          throw new Error(data.error || 'Failed to fetch holdings');
+        }
+        const data = await res.json();
+        setHoldings(data);
+      } catch (err) {
+        setHoldingsError(err.message);
+      } finally {
+        setHoldingsLoading(false);
+      }
+    };
+    fetchHoldings();
+  }, []);
+
+  const refreshHoldings = async () => {
+    setHoldingsLoading(true);
+    setHoldingsError('');
+    try {
+      const res = await fetch('http://localhost:5000/api/portfolio', {
+        method: 'GET',
+        credentials: 'include',
+      });
+      if (!res.ok) {
+        const data = await res.json();
+        throw new Error(data.error || 'Failed to fetch holdings');
+      }
+      const data = await res.json();
+      setHoldings(data);
+    } catch (err) {
+      setHoldingsError(err.message);
+    } finally {
+      setHoldingsLoading(false);
+    }
+  };
 
   const topGainers = [
     { symbol: 'TSLA', name: 'Tesla Inc.', change: '+5.2%' },
@@ -54,8 +96,6 @@ const Dashboard = () => {
     setAddLoading(true);
     setAddError('');
     setAddSuccess('');
-    // Placeholder userId for demo
-    const userId = 'demo-user-id';
     try {
       const res = await fetch('http://localhost:5000/api/portfolio', {
         method: 'POST',
@@ -64,8 +104,8 @@ const Dashboard = () => {
           symbol: addForm.symbol,
           quantity: addForm.quantity,
           date: addForm.date,
-          userId
-        })
+        }),
+        credentials: 'include',
       });
       if (!res.ok) {
         const data = await res.json();
@@ -74,7 +114,7 @@ const Dashboard = () => {
       setAddSuccess('Stock added successfully!');
       setShowAddModal(false);
       setAddForm({ symbol: '', quantity: '', date: '' });
-      // Optionally: refresh holdings here
+      await refreshHoldings();
     } catch (err) {
       setAddError(err.message);
     } finally {
@@ -242,44 +282,55 @@ const Dashboard = () => {
               </button>
             </div>
             <div className="holdings-table">
-              <table>
-                <thead>
-                  <tr>
-                    <th>Stock</th>
-                    <th>Quantity</th>
-                    <th>Purchase Price</th>
-                    <th>Current Price</th>
-                    <th>Profit/Loss</th>
-                    <th>Total Value</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {holdings.map((stock) => {
-                    const { value, percentage } = calculateProfitLoss(
-                      stock.purchasePrice,
-                      stock.currentPrice,
-                      stock.quantity
-                    );
-                    return (
-                      <tr key={stock.symbol}>
-                        <td>
-                          <div className="stock-info">
-                            <span className="symbol">{stock.symbol}</span>
-                            <span className="name">{stock.name}</span>
-                          </div>
-                        </td>
-                        <td>{stock.quantity}</td>
-                        <td>${stock.purchasePrice.toFixed(2)}</td>
-                        <td>${stock.currentPrice.toFixed(2)}</td>
-                        <td className={value >= 0 ? 'profit' : 'loss'}>
-                          ${Math.abs(value).toFixed(2)} ({percentage}%)
-                        </td>
-                        <td>${(stock.currentPrice * stock.quantity).toFixed(2)}</td>
-                      </tr>
-                    );
-                  })}
-                </tbody>
-              </table>
+              {holdingsLoading ? (
+                <div>Loading holdings...</div>
+              ) : holdingsError ? (
+                <div className="error-message">{holdingsError}</div>
+              ) : holdings.length === 0 ? (
+                <div>No holdings found.</div>
+              ) : (
+                <table>
+                  <thead>
+                    <tr>
+                      <th>Stock</th>
+                      <th>Quantity</th>
+                      <th>Purchase Price</th>
+                      <th>Current Price</th>
+                      <th>Profit/Loss</th>
+                      <th>Total Value</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {holdings.map((stock) => {
+                      // If your backend returns purchasePrice/currentPrice, use them. Otherwise, adapt as needed.
+                      const purchasePrice = stock.closingPrice || 0;
+                      const currentPrice = stock.closingPrice || 0; // You may want to fetch real-time price separately
+                      const { value, percentage } = calculateProfitLoss(
+                        purchasePrice,
+                        currentPrice,
+                        stock.quantity
+                      );
+                      return (
+                        <tr key={stock._id || `${stock.symbol}-${stock.date}`}>
+                          <td>
+                            <div className="stock-info">
+                              <span className="symbol">{stock.symbol}</span>
+                              {/* Optionally show name if available: <span className="name">{stock.name}</span> */}
+                            </div>
+                          </td>
+                          <td>{stock.quantity}</td>
+                          <td>${purchasePrice.toFixed(2)}</td>
+                          <td>${currentPrice.toFixed(2)}</td>
+                          <td className={value >= 0 ? 'profit' : 'loss'}>
+                            ${Math.abs(value).toFixed(2)} ({percentage}%)
+                          </td>
+                          <td>${(currentPrice * stock.quantity).toFixed(2)}</td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              )}
             </div>
           </section>
 
