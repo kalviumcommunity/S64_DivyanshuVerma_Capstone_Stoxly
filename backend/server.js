@@ -112,24 +112,40 @@ app.post('/api/users', async (req, res) => {
   try {
     const { fullName, email, password } = req.body;
     
-    if (!fullName || !email || !password) {
-      return res.status(400).json({ error: 'All fields are required' });
+    if (!fullName || !email) {
+      return res.status(400).json({ error: 'Full name and email are required' });
     }
 
-    // Hash the password
-    const saltRounds = 10;
-    const hashedPassword = await bcrypt.hash(password, saltRounds);
+    // Check if user already exists
+    const existingUser = await User.findOne({ email });
+    if (existingUser) {
+      return res.status(400).json({ error: 'User with this email already exists' });
+    }
 
+    // Create new user with local authentication
     const user = new User({
       fullName,
       email,
-      password: hashedPassword
+      password,
+      authMethod: 'local'
     });
 
     await user.save();
-    res.status(201).json(user);
+
+    // Return user data without password
+    const userData = {
+      _id: user._id,
+      fullName: user.fullName,
+      email: user.email,
+      authMethod: user.authMethod
+    };
+
+    res.status(201).json(userData);
   } catch (error) {
     console.error('Error creating user:', error);
+    if (error.name === 'ValidationError') {
+      return res.status(400).json({ error: error.message });
+    }
     res.status(500).json({ error: 'Failed to create user' });
   }
 });
