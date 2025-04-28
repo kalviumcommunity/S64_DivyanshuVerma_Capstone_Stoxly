@@ -8,6 +8,8 @@ const GoogleStrategy = require('passport-google-oauth20').Strategy;
 const Portfolio = require('./models/portfolio');
 const User = require('./models/user');
 const connectDatabase = require('./database/db');
+const jwt = require('jsonwebtoken');
+const cookieParser = require('cookie-parser');
 
 dotenv.config();
 
@@ -50,6 +52,7 @@ passport.use(new GoogleStrategy({
 ));
 
 app.use(express.json());
+app.use(cookieParser());
 
 connectDatabase();
 
@@ -150,6 +153,21 @@ app.post('/api/users', async (req, res) => {
   }
 });
 
+// JWT authentication middleware
+function authenticateJWT(req, res, next) {
+  const authHeader = req.headers.authorization;
+  if (authHeader && authHeader.startsWith('Bearer ')) {
+    const token = authHeader.split(' ')[1];
+    jwt.verify(token, process.env.JWT_SECRET, (err, user) => {
+      if (err) return res.sendStatus(403);
+      req.user = user;
+      next();
+    });
+  } else {
+    res.sendStatus(401);
+  }
+}
+
 app.post('/api/users/login', async (req, res) => {
   try {
     const { email, password } = req.body;
@@ -176,8 +194,16 @@ app.post('/api/users/login', async (req, res) => {
       email: user.email
     };
 
+    // Generate JWT
+    const token = jwt.sign(
+      { userId: user._id, email: user.email },
+      process.env.JWT_SECRET,
+      { expiresIn: '7d' }
+    );
+
     res.json({
-      user: userData
+      user: userData,
+      token
     });
   } catch (error) {
     console.error('Error during login:', error);
@@ -185,9 +211,11 @@ app.post('/api/users/login', async (req, res) => {
   }
 });
 
-app.post('/api/portfolio', async (req, res) => {
+// Protect portfolio routes with JWT
+app.post('/api/portfolio', authenticateJWT, async (req, res) => {
   try {
-    const { symbol, date, quantity, userId } = req.body;
+    const { symbol, date, quantity } = req.body;
+    const userId = req.user.userId;
 
     if (!symbol || !date || !userId) {
       return res.status(400).json({ error: 'Symbol, date, and userId are required' });
@@ -225,14 +253,12 @@ app.post('/api/portfolio', async (req, res) => {
   }
 });
 
-app.get('/api/portfolio', async (req, res) => {
+app.get('/api/portfolio', authenticateJWT, async (req, res) => {
   try {
-    const { userId } = req.query;
-    
+    const userId = req.user.userId;
     if (!userId) {
       return res.status(400).json({ error: 'userId is required' });
     }
-
     const portfolio = await Portfolio.find({ user: userId }).sort({ date: -1 });
     res.json(portfolio);
   } catch (error) {
@@ -241,10 +267,11 @@ app.get('/api/portfolio', async (req, res) => {
   }
 });
 
-app.put('/api/portfolio/:symbol', async (req, res) => {
+app.put('/api/portfolio/:symbol', authenticateJWT, async (req, res) => {
   try {
     const { symbol } = req.params;
-    const { quantity, date, userId } = req.body;
+    const { quantity, date } = req.body;
+    const userId = req.user.userId;
 
     if (!userId) {
       return res.status(400).json({ error: 'userId is required' });
@@ -283,10 +310,11 @@ app.put('/api/portfolio/:symbol', async (req, res) => {
   }
 });
 
-app.delete('/api/portfolio/:symbol', async (req, res) => {
+app.delete('/api/portfolio/:symbol', authenticateJWT, async (req, res) => {
   try {
     const { symbol } = req.params;
-    const { date, userId } = req.query;
+    const { date } = req.query;
+    const userId = req.user.userId;
 
     if (!userId) {
       return res.status(400).json({ error: 'userId is required' });
@@ -316,7 +344,20 @@ app.get('/auth/google',
 app.get('/auth/google/callback',
   passport.authenticate('google', { failureRedirect: '/login', session: false }),
   (req, res) => {
-    res.redirect('http://localhost:5173/dashboard');
+    // Generate JWT for the authenticated user
+    const token = jwt.sign(
+      { userId: req.user._id, email: req.user.email },
+      process.env.JWT_SECRET,
+      { expiresIn: '7d' }
+    );
+    // You can pass user info as well, but avoid sensitive data
+    const userData = encodeURIComponent(JSON.stringify({
+      _id: req.user._id,
+      fullName: req.user.fullName,
+      email: req.user.email
+    }));
+    // Redirect to frontend with token and user data in query params
+    res.redirect(`http://localhost:5173/dashboard?token=${token}&user=${userData}`);
   }
 );
 
