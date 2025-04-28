@@ -5,7 +5,6 @@ const https = require('https');
 const bcrypt = require('bcrypt');
 const passport = require('passport');
 const GoogleStrategy = require('passport-google-oauth20').Strategy;
-const session = require('express-session');
 const Portfolio = require('./models/portfolio');
 const User = require('./models/user');
 const connectDatabase = require('./database/db');
@@ -20,21 +19,7 @@ app.use(cors({
   credentials: true
 }));
 
-
-app.use(session({
-  secret: process.env.SESSION_SECRET || 'your-secret-key',
-  resave: false,
-  saveUninitialized: false,
-  cookie: {
-    secure: process.env.NODE_ENV === 'production',
-    maxAge: 24 * 60 * 60 * 1000
-  }
-}));
-
-
 app.use(passport.initialize());
-app.use(passport.session());
-
 
 passport.use(new GoogleStrategy({
     clientID: process.env.GOOGLE_CLIENT_ID,
@@ -46,7 +31,6 @@ passport.use(new GoogleStrategy({
       let user = await User.findOne({ email: profile.emails[0].value });
       
       if (!user) {
-    
         user = new User({
           fullName: profile.displayName,
           email: profile.emails[0].value,
@@ -64,20 +48,6 @@ passport.use(new GoogleStrategy({
     }
   }
 ));
-
-
-passport.serializeUser((user, done) => {
-  done(null, user.id);
-});
-
-passport.deserializeUser(async (id, done) => {
-  try {
-    const user = await User.findById(id);
-    done(null, user);
-  } catch (error) {
-    done(error, null);
-  }
-});
 
 app.use(express.json());
 
@@ -138,7 +108,6 @@ app.get('/api/stock/price', async (req, res) => {
   }
 });
 
-
 app.post('/api/users', async (req, res) => {
   try {
     const { fullName, email, password } = req.body;
@@ -164,7 +133,6 @@ app.post('/api/users', async (req, res) => {
     res.status(500).json({ error: 'Failed to create user' });
   }
 });
-
 
 app.post('/api/users/login', async (req, res) => {
   try {
@@ -330,7 +298,7 @@ app.get('/auth/google',
 );
 
 app.get('/auth/google/callback',
-  passport.authenticate('google', { failureRedirect: '/login' }),
+  passport.authenticate('google', { failureRedirect: '/login', session: false }),
   (req, res) => {
     res.redirect('http://localhost:5173/dashboard');
   }
