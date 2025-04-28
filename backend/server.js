@@ -3,19 +3,51 @@ const cors = require('cors');
 const dotenv = require('dotenv');
 const https = require('https');
 const bcrypt = require('bcrypt');
+const passport = require('passport');
+const GoogleStrategy = require('passport-google-oauth20').Strategy;
 const Portfolio = require('./models/portfolio');
 const User = require('./models/user');
-const connectDatabase= require('./database/db')
+const connectDatabase = require('./database/db');
 
 dotenv.config();
 
 const app = express();
 
 app.use(cors({
-  origin: 'http://localhost:5173', 
+  origin: 'http://localhost:5173',
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
   credentials: true
 }));
+
+app.use(passport.initialize());
+
+passport.use(new GoogleStrategy({
+    clientID: process.env.GOOGLE_CLIENT_ID,
+    clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+    callbackURL: "http://localhost:5000/auth/google/callback"
+  },
+  async (accessToken, refreshToken, profile, done) => {
+    try {
+      let user = await User.findOne({ email: profile.emails[0].value });
+      
+      if (!user) {
+        user = new User({
+          fullName: profile.displayName,
+          email: profile.emails[0].value,
+          authMethod: 'google',
+          providerId: profile.id,
+          profilePicture: profile.photos[0].value,
+          isVerified: true
+        });
+        await user.save();
+      }
+      
+      return done(null, user);
+    } catch (error) {
+      return done(error, null);
+    }
+  }
+));
 
 app.use(express.json());
 
@@ -76,7 +108,6 @@ app.get('/api/stock/price', async (req, res) => {
   }
 });
 
-
 app.post('/api/users', async (req, res) => {
   try {
     const { fullName, email, password } = req.body;
@@ -102,7 +133,6 @@ app.post('/api/users', async (req, res) => {
     res.status(500).json({ error: 'Failed to create user' });
   }
 });
-
 
 app.post('/api/users/login', async (req, res) => {
   try {
@@ -262,6 +292,17 @@ app.delete('/api/portfolio/:symbol', async (req, res) => {
     res.status(500).json({ error: 'Failed to remove stock' });
   }
 });
+
+app.get('/auth/google',
+  passport.authenticate('google', { scope: ['profile', 'email'] })
+);
+
+app.get('/auth/google/callback',
+  passport.authenticate('google', { failureRedirect: '/login', session: false }),
+  (req, res) => {
+    res.redirect('http://localhost:5173/dashboard');
+  }
+);
 
 const PORT = process.env.PORT || 5000;
 
