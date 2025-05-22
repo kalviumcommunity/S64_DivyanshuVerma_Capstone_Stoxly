@@ -19,6 +19,10 @@ const portfolioSchema = new mongoose.Schema({
     type: Number,
     required: true
   },
+  currentPrice: {
+    type: Number,
+    default: null
+  },
   quantity: {
     type: Number,
     min: 1,

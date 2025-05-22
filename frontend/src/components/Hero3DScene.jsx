@@ -1,8 +1,16 @@
-import React, { useRef, useEffect } from "react";
+import React, { useRef, useEffect, Suspense } from "react";
 import { Canvas, useFrame } from "@react-three/fiber";
 import { OrbitControls, useGLTF } from "@react-three/drei";
 import { EffectComposer, Bloom } from "@react-three/postprocessing";
 import * as THREE from "three";
+
+// Loading fallback component
+const Loader = () => (
+  <mesh>
+    <boxGeometry args={[1, 1, 1]} />
+    <meshStandardMaterial color="#333" />
+  </mesh>
+);
 
 // 3D Model Component
 const Model = () => {
@@ -14,7 +22,6 @@ const Model = () => {
       if (child.isMesh) {
         child.castShadow = true;
         child.receiveShadow = true;
-
       }
     });
   }, [scene]);
@@ -41,47 +48,48 @@ const Hero3DScene = () => {
         gl={{ 
           powerPreference: "high-performance", 
           antialias: true,
-          outputEncoding: THREE.sRGB,
-          toneMapping: THREE.ACESFilmic,
+          outputEncoding: THREE.sRGBEncoding,
+          toneMapping: THREE.ACESFilmicToneMapping,
           toneMappingExposure: 1.5
         }}
         style={{ background: "#000" }}
       >
-        {/* Ambient base light */}
-        <ambientLight intensity={2} />
-
-        {/* Spotlight from above navbar */}
-      
-
-        {/* Directional & point lights for glow */}
-        <directionalLight position={[0, 5, 5]} intensity={3} />
-        <directionalLight
-          position={[-5, 2, 5]}
-          intensity={0.5}
-          color="#ffffff"
-        />
-        <pointLight
-          position={[5, -2, 5]}
-          intensity={1.2}
-          color="#ff9900"
-        />
-
-        {/* 3D Model */}
-        <Model />
-
-
-        {/* Controls */}
-        <OrbitControls enableZoom={false} enablePan={false} />
-
-        {/* Postprocessing: Bloom */}
-        <EffectComposer>
-          <Bloom
-            intensity={1.2}
-            kernelSize={3}
-            luminanceThreshold={0.2}
-            luminanceSmoothing={0.025}
+        <Suspense fallback={<Loader />}>
+          {/* Lights */}
+          <ambientLight intensity={2} />
+          <directionalLight position={[0, 5, 5]} intensity={3} />
+          <directionalLight
+            position={[-5, 2, 5]}
+            intensity={0.5}
+            color="#ffffff"
           />
-        </EffectComposer>
+          <pointLight
+            position={[5, -2, 5]}
+            intensity={1.2}
+            color="#ff9900"
+          />
+
+          {/* 3D Model */}
+          <Model />
+
+          {/* Controls */}
+          <OrbitControls 
+            enableZoom={false} 
+            enablePan={false}
+            enableDamping={true}
+            dampingFactor={0.05}
+          />
+
+          {/* Post-processing */}
+          <EffectComposer>
+            <Bloom
+              intensity={1.5}
+              kernelSize={3}
+              luminanceThreshold={0.2}
+              luminanceSmoothing={0.025}
+            />
+          </EffectComposer>
+        </Suspense>
       </Canvas>
     </div>
   );

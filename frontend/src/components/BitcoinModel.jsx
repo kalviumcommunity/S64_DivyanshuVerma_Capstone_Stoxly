@@ -26,17 +26,6 @@ const Model = () => {
         child.receiveShadow = true;
       }
     });
-
-    // Cleanup function
-    return () => {
-      scene.traverse((child) => {
-        if (child.isMesh) {
-          child.geometry.dispose();
-          if (child.material.map) child.material.map.dispose();
-          child.material.dispose();
-        }
-      });
-    };
   }, [scene]);
 
   useFrame(() => {
@@ -106,6 +95,7 @@ const BitcoinModel = () => {
     </div>
   );
 };
+
 
 // Preload the model
 useGLTF.preload("/bitcoin_final.glb");

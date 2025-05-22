@@ -10,6 +10,9 @@ const User = require('./models/user');
 const connectDatabase = require('./database/db');
 const jwt = require('jsonwebtoken');
 const cookieParser = require('cookie-parser');
+const http = require('http');
+const setupWebSocketServer = require('./websocket');
+const axios = require('axios');
 
 dotenv.config();
 
@@ -80,7 +83,10 @@ const fetchClosingPrice = async (symbol, date) => {
       response.on('end', () => {
         const body = Buffer.concat(chunks);
         const parsedData = JSON.parse(body.toString());
-        const closingPrice = parsedData.bars[0]?.c || 0;
+        let closingPrice = 0;
+        if (parsedData.bars && Array.isArray(parsedData.bars) && parsedData.bars.length > 0) {
+          closingPrice = parsedData.bars[0].c || 0;
+        }
         resolve(closingPrice);
       });
     });
@@ -241,7 +247,25 @@ app.post('/api/portfolio', authenticateJWT, async (req, res) => {
 
     const quantityNum = Number(quantity);
 
+    // Fetch closing price for purchase date
     const closingPrice = await fetchClosingPrice(symbol, date);
+
+    // Fetch latest bar for current price
+    let currentPrice = closingPrice;
+    try {
+      const latestBarUrl = `https://data.alpaca.markets/v2/stocks/${symbol}/bars?timeframe=1Day&limit=1`;
+      const latestBarRes = await axios.get(latestBarUrl, {
+        headers: {
+          'APCA-API-KEY-ID': process.env.ALPACA_API_KEY,
+          'APCA-API-SECRET-KEY': process.env.ALPACA_SECRET_KEY,
+        },
+      });
+      if (latestBarRes.data && Array.isArray(latestBarRes.data.bars) && latestBarRes.data.bars.length > 0) {
+        currentPrice = latestBarRes.data.bars[0].c || closingPrice;
+      }
+    } catch (err) {
+      console.error('Error fetching latest bar for current price:', err.message);
+    }
 
     const portfolioEntry = await Portfolio.findOneAndUpdate(
       { user: userId, symbol, date: new Date(date) },
@@ -250,6 +274,7 @@ app.post('/api/portfolio', authenticateJWT, async (req, res) => {
         symbol,
         date: new Date(date),
         closingPrice,
+        currentPrice,
         quantity: quantityNum,
         totalValue: closingPrice * quantityNum,
         lastUpdated: new Date()
@@ -278,10 +303,11 @@ app.get('/api/portfolio', authenticateJWT, async (req, res) => {
   }
 });
 
-app.put('/api/portfolio/:symbol', authenticateJWT, async (req, res) => {
+// Update portfolio entry by symbol and date
+app.put('/api/portfolio/:symbol/:date', authenticateJWT, async (req, res) => {
   try {
-    const { symbol } = req.params;
-    const { quantity, date } = req.body;
+    const { symbol, date } = req.params;
+    const { quantity, newDate } = req.body;
     const userId = req.user.userId;
 
     if (!userId) {
@@ -294,20 +320,53 @@ app.put('/api/portfolio/:symbol', authenticateJWT, async (req, res) => {
     }
 
     const quantityNum = Number(quantity);
+    const originalDate = new Date(date);
+    const updatedDate = newDate ? new Date(newDate) : originalDate;
+    const closingPrice = await fetchClosingPrice(symbol, updatedDate.toISOString().split('T')[0]);
 
-    const currentDate = date || new Date().toISOString().split('T')[0];
-    const closingPrice = await fetchClosingPrice(symbol, currentDate);
+    // If date is changed, check for duplicate
+    if (newDate && new Date(newDate).getTime() !== new Date(date).getTime()) {
+      const existing = await Portfolio.findOne({ user: userId, symbol, date: updatedDate });
+      if (existing) {
+        return res.status(400).json({ error: 'A holding with this symbol and date already exists.' });
+      }
+    }
 
+    // Update the entry (including date if changed)
     const updatedPortfolio = await Portfolio.findOneAndUpdate(
-      { user: userId, symbol, date: new Date(currentDate) },
+      { user: userId, symbol, date: originalDate },
       {
         quantity: quantityNum,
         closingPrice: closingPrice,
         totalValue: closingPrice * quantityNum,
-        lastUpdated: new Date()
+        lastUpdated: new Date(),
+        ...(newDate && new Date(newDate).getTime() !== new Date(date).getTime() ? { date: updatedDate } : {})
       },
-      { upsert: true, new: true }
+      { new: true }
     );
+
+    if (!updatedPortfolio) {
+      return res.status(404).json({ error: 'Portfolio entry not found.' });
+    }
+
+    // Fetch and update the latest current price
+    try {
+      const latestBarUrl = `https://data.alpaca.markets/v2/stocks/${symbol}/bars?timeframe=1Day&limit=1`;
+      const latestBarRes = await axios.get(latestBarUrl, {
+        headers: {
+          'APCA-API-KEY-ID': process.env.ALPACA_API_KEY,
+          'APCA-API-SECRET-KEY': process.env.ALPACA_SECRET_KEY,
+        },
+      });
+      let currentPrice = closingPrice;
+      if (latestBarRes.data && Array.isArray(latestBarRes.data.bars) && latestBarRes.data.bars.length > 0) {
+        currentPrice = latestBarRes.data.bars[0].c || closingPrice;
+      }
+      updatedPortfolio.currentPrice = currentPrice;
+      await updatedPortfolio.save();
+    } catch (err) {
+      console.error('Error updating current price after edit:', err.message);
+    }
 
     res.json({
       message: 'Portfolio updated successfully',
@@ -371,8 +430,206 @@ app.get('/auth/google/callback',
   }
 );
 
-const PORT = process.env.PORT || 5000;
+app.get('/api/news', async (req, res) => {
+  try {
+    const { symbols } = req.query;
+    if (!symbols) {
+      return res.status(400).json({ error: 'Symbols query parameter is required' });
+    }
+    const symbolList = symbols.split(',').map(s => s.trim()).filter(Boolean);
+    if (symbolList.length === 0) {
+      return res.status(400).json({ error: 'No valid symbols provided' });
+    }
+    // Fetch more news for all symbols at once
+    const newsUrl = `https://data.alpaca.markets/v1beta1/news?symbols=${symbolList.join(',')}&limit=20`;
+    const response = await axios.get(newsUrl, {
+      headers: {
+        'APCA-API-KEY-ID': process.env.ALPACA_API_KEY,
+        'APCA-API-SECRET-KEY': process.env.ALPACA_SECRET_KEY,
+      },
+    });
+    // Only include news for the requested symbols, and only those with a large image
+    const grouped = {};
+    for (const symbol of symbolList) {
+      grouped[symbol] = [];
+    }
+    for (const article of response.data.news || []) {
+      const hasLargeImage = Array.isArray(article.images) && article.images.some(img => img.size === 'large');
+      if (!hasLargeImage) continue;
+      for (const symbol of symbolList) {
+        if (article.symbols.includes(symbol) && grouped[symbol].length < 5) {
+          grouped[symbol].push(article);
+        }
+      }
+    }
+    res.json(grouped);
+  } catch (error) {
+    console.error('Error fetching news:', error.response?.data || error.message);
+    res.status(500).json({ error: 'Failed to fetch news' });
+  }
+});
 
-app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`);
+app.get('/api/asset-names', async (req, res) => {
+  try {
+    const { symbols } = req.query;
+    if (!symbols) {
+      return res.status(400).json({ error: 'Symbols query parameter is required' });
+    }
+    const url = `https://paper-api.alpaca.markets/v2/assets?symbols=${symbols}`;
+    const response = await axios.get(url, {
+      headers: {
+        'APCA-API-KEY-ID': process.env.ALPACA_API_KEY,
+        'APCA-API-SECRET-KEY': process.env.ALPACA_SECRET_KEY,
+      },
+    });
+    // Map symbol to name
+    const mapping = {};
+    for (const asset of response.data) {
+      mapping[asset.symbol] = asset.name;
+    }
+    res.json(mapping);
+  } catch (error) {
+    console.error('Error fetching asset names:', error.response?.data || error.message);
+    res.status(500).json({ error: 'Failed to fetch asset names' });
+  }
+});
+
+// Add latest bars endpoint
+app.get('/api/market/latest-bars', async (req, res) => {
+  try {
+    const { symbols } = req.query;
+    if (!symbols) {
+      return res.status(400).json({ error: 'Symbols query parameter is required' });
+    }
+
+    const url = `https://data.alpaca.markets/v2/stocks/bars/latest?symbols=${symbols}`;
+    const response = await axios.get(url, {
+      headers: {
+        'APCA-API-KEY-ID': process.env.ALPACA_API_KEY,
+        'APCA-API-SECRET-KEY': process.env.ALPACA_SECRET_KEY,
+      },
+    });
+
+    // FIX: Use response.data.bars
+    const latestBars = {};
+    for (const [symbol, data] of Object.entries(response.data.bars)) {
+      latestBars[symbol] = {
+        c: data.c,
+        h: data.h,
+        l: data.l,
+        o: data.o,
+        t: data.t,
+        v: data.v
+      };
+    }
+
+    res.json(latestBars);
+  } catch (error) {
+    console.error('Error fetching latest bars:', error.response?.data || error.message);
+    res.status(500).json({ error: 'Failed to fetch latest bars' });
+  }
+});
+
+// Get market movers
+app.get('/api/market/market-movers', async (req, res) => {
+  try {
+    console.log('Fetching market movers...');
+    // Fetch top gainers and losers from Alpaca
+    const response = await axios.get('https://data.alpaca.markets/v1beta1/screener/stocks/movers?top=3', {
+      headers: {
+        'APCA-API-KEY-ID': process.env.ALPACA_API_KEY,
+        'APCA-API-SECRET-KEY': process.env.ALPACA_SECRET_KEY
+      }
+    });
+    
+
+    // Get all unique symbols from both gainers and losers
+    const allSymbols = [
+      ...response.data.gainers.map(stock => stock.symbol),
+      ...response.data.losers.map(stock => stock.symbol)
+    ];
+    
+
+    // Fetch asset names for all symbols
+    const assetNamesResponse = await axios.get(`https://paper-api.alpaca.markets/v2/assets?symbols=${allSymbols.join(',')}`, {
+      headers: {
+        'APCA-API-KEY-ID': process.env.ALPACA_API_KEY,
+        'APCA-API-SECRET-KEY': process.env.ALPACA_SECRET_KEY,
+      },
+    });
+    
+
+    // Create a mapping of symbol to name
+    const symbolToName = {};
+    assetNamesResponse.data.forEach(asset => {
+      symbolToName[asset.symbol] = asset.name;
+    });
+
+    // Process the response to get top 3 gainers and losers with names
+    const gainers = response.data.gainers.map(stock => ({
+      symbol: stock.symbol,
+      name: symbolToName[stock.symbol] || stock.symbol,
+      change: stock.change
+    }));
+
+    const losers = response.data.losers.map(stock => ({
+      symbol: stock.symbol,
+      name: symbolToName[stock.symbol] || stock.symbol,
+      change: stock.change
+    }));
+
+    const result = { gainers, losers };
+    console.log('Sending response:', result);
+    res.json(result);
+  } catch (error) {
+    console.error('Error fetching market movers:', error.response?.data || error.message);
+    res.status(500).json({ error: 'Failed to fetch market movers' });
+  }
+});
+
+// Utility to get previous trading day (skipping weekends)
+function getPreviousTradingDay(date = new Date()) {
+  let d = new Date(date);
+  do {
+    d.setDate(d.getDate() - 1);
+  } while (d.getDay() === 0 || d.getDay() === 6); // 0 = Sunday, 6 = Saturday
+  return d.toISOString().split('T')[0];
+}
+
+// Endpoint to get yesterday's close for multiple symbols
+app.get('/api/market/yesterday-close', async (req, res) => {
+  try {
+    const { symbols } = req.query;
+    if (!symbols) {
+      return res.status(400).json({ error: 'Symbols query parameter is required' });
+    }
+    const symbolList = symbols.split(',').map(s => s.trim()).filter(Boolean);
+    if (symbolList.length === 0) {
+      return res.status(400).json({ error: 'No valid symbols provided' });
+    }
+    const yesterday = getPreviousTradingDay();
+    const url = `https://data.alpaca.markets/v2/stocks/bars?symbols=${symbolList.join(',')}&timeframe=1Day&start=${yesterday}&end=${yesterday}`;
+    const response = await axios.get(url, {
+      headers: {
+        'APCA-API-KEY-ID': process.env.ALPACA_API_KEY,
+        'APCA-API-SECRET-KEY': process.env.ALPACA_SECRET_KEY,
+      },
+    });
+    const closes = {};
+    for (const symbol of symbolList) {
+      const bars = response.data.bars[symbol];
+      closes[symbol] = bars && bars.length > 0 ? bars[0].c : null;
+    }
+    res.json(closes);
+  } catch (error) {
+    console.error('Error fetching yesterday close:', error.response?.data || error.message);
+    res.status(500).json({ error: 'Failed to fetch yesterday close' });
+  }
+});
+
+const PORT = process.env.PORT || 5000;
+const server = http.createServer(app);
+setupWebSocketServer(server);
+server.listen(PORT, () => {
+  console.log(`Server and WebSocket running on port ${PORT}`);
 }); 
