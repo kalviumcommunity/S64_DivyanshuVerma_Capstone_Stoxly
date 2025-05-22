@@ -1,0 +1,255 @@
+.card-container {
+  padding: 5rem 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.card-container-inner {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  transition: all 0.2s ease-linear;
+}
+
+.card-body {
+  height: 24rem;
+  width: 24rem;
+  transform-style: preserve-3d;
+}
+
+.card-body > * {
+  transform-style: preserve-3d;
+}
+
+.card-item {
+  width: fit-content;
+  transition: duration 0.2s ease-linear;
+}
+
+/* Demo specific styles */
+.card-demo-container {
+  font-family: 'Inter', sans-serif;
+}
+
+.card-demo-body {
+  background-color: #f9fafb;
+  position: relative;
+  width: auto;
+  height: auto;
+  border-radius: 0.75rem;
+  padding: 1.5rem;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.card-demo-body:hover {
+  box-shadow: 0 0 2rem rgba(0, 0, 0, 0.1);
+}
+
+.card-demo-title {
+  font-size: 1.25rem;
+  font-weight: bold;
+  color: #4b5563;
+}
+
+.card-demo-description {
+  color: #6b7280;
+  font-size: 0.875rem;
+  max-width: 24rem;
+  margin-top: 0.5rem;
+}
+
+.card-demo-image-container {
+  width: 100%;
+  margin-top: 1rem;
+}
+
+.card-demo-image {
+  height: 15rem;
+  width: 100%;
+  object-fit: cover;
+  border-radius: 0.75rem;
+}
+
+.card-demo-image:hover {
+  box-shadow: 0 0 1rem rgba(0, 0, 0, 0.1);
+}
+
+.card-demo-actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 5rem;
+}
+
+.card-demo-link {
+  padding: 0.5rem 1rem;
+  border-radius: 0.75rem;
+  font-size: 0.75rem;
+  font-weight: normal;
+  color: #000;
+  text-decoration: none;
+}
+
+.card-demo-button {
+  padding: 0.5rem 1rem;
+  border-radius: 0.75rem;
+  background-color: #000;
+  color: #fff;
+  font-size: 0.75rem;
+  font-weight: bold;
+  border: none;
+  cursor: pointer;
+}
+
+/* Dark mode styles */
+@media (prefers-color-scheme: dark) {
+  .card-demo-body {
+    background-color: #000;
+    border-color: rgba(255, 255, 255, 0.2);
+  }
+
+  .card-demo-body:hover {
+    box-shadow: 0 0 2rem rgba(16, 185, 129, 0.1);
+  }
+
+  .card-demo-title {
+    color: #fff;
+  }
+
+  .card-demo-description {
+    color: #d1d5db;
+  }
+
+  .card-demo-link {
+    color: #fff;
+  }
+
+  .card-demo-button {
+    background-color: #fff;
+    color: #000;
+  }
+}
+
+/* Gainers Card styles */
+.gainers-card-container {
+  padding: 1rem 0;
+}
+
+.gainers-card-body {
+  background-color: #f9fafb;
+  position: relative;
+  width: 100%;
+  height: auto;
+  border-radius: 0.75rem;
+  padding: 1.5rem;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.gainers-card-body:hover {
+  box-shadow: 0 0 2rem rgba(0, 0, 0, 0.1);
+}
+
+.gainers-card-title {
+  font-size: 1.25rem;
+  font-weight: bold;
+  color: #4b5563;
+  margin-bottom: 1rem;
+}
+
+.gainers-card-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.gainers-card-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.75rem;
+  background-color: #fff;
+  border-radius: 0.5rem;
+  border: 1px solid rgba(0, 0, 0, 0.05);
+  transition: transform 0.2s ease;
+}
+
+.gainers-card-item:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+}
+
+.gainers-card-item .stock-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.gainers-card-item .symbol {
+  font-weight: bold;
+  color: #1f2937;
+}
+
+.gainers-card-item .name {
+  font-size: 0.875rem;
+  color: #6b7280;
+}
+
+.gainers-card-item .change {
+  font-weight: bold;
+  padding: 0.25rem 0.5rem;
+  border-radius: 0.25rem;
+}
+
+.gainers-card-item .change.gain {
+  color: #059669;
+  background-color: #ecfdf5;
+}
+
+.gainers-card-loading,
+.gainers-card-error,
+.gainers-card-empty {
+  text-align: center;
+  padding: 2rem;
+  color: #6b7280;
+}
+
+.gainers-card-error {
+  color: #dc2626;
+}
+
+/* Dark mode styles for gainers card */
+@media (prefers-color-scheme: dark) {
+  .gainers-card-body {
+    background-color: #1f2937;
+    border-color: rgba(255, 255, 255, 0.1);
+  }
+
+  .gainers-card-title {
+    color: #f3f4f6;
+  }
+
+  .gainers-card-item {
+    background-color: #374151;
+    border-color: rgba(255, 255, 255, 0.05);
+  }
+
+  .gainers-card-item .symbol {
+    color: #f3f4f6;
+  }
+
+  .gainers-card-item .name {
+    color: #9ca3af;
+  }
+
+  .gainers-card-item .change.gain {
+    color: #34d399;
+    background-color: rgba(52, 211, 153, 0.1);
+  }
+
+  .gainers-card-loading,
+  .gainers-card-empty {
+    color: #9ca3af;
+  }
+} 

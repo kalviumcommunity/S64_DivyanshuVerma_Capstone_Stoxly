@@ -12,13 +12,29 @@ import { FaTwitter, FaLinkedinIn, FaGithub } from 'react-icons/fa';
 import ScrollFloat from '../components/ScrollFloat';
 
 const LandingPage = () => {
-  useEffect(()=>{
-    const lenis = new Lenis();
-    function raf(time){
+  useEffect(() => {
+    const lenis = new Lenis({
+      duration: 1.2,
+      easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+      orientation: 'vertical',
+      smoothWheel: true,
+      wheelMultiplier: 1,
+      smoothTouch: false,
+      touchMultiplier: 2,
+    });
+    
+    function raf(time) {
       lenis.raf(time);
       requestAnimationFrame(raf);
     }
-    requestAnimationFrame(raf);
+    
+    const rafId = requestAnimationFrame(raf);
+    
+    // Cleanup function to prevent memory leaks
+    return () => {
+      cancelAnimationFrame(rafId);
+      lenis.destroy();
+    };
   }, []);
     
   return (
