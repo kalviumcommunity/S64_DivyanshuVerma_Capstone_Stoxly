@@ -109,8 +109,37 @@ Tracking stock investments manually can be challenging, leading to difficulties 
 - Explore interactive charts and 3D visualizations.
 - Stay informed with live news and market movers.
 
+
+## 🚀 Quick Start with Docker
+
+### 1. Create `.env` file
+```env
+MONGODB_URI=your_mongodb_connection_string
+JWT_SECRET=your_jwt_secret_key
+ALPACA_API_KEY=your_alpaca_api_key
+ALPACA_SECRET_KEY=your_alpaca_secret_key
+GOOGLE_CLIENT_ID=your_google_client_id
+GOOGLE_CLIENT_SECRET=your_google_client_secret
+```
+
+### 2. Run the app
+```bash
+docker-compose up --build
+```
+
+### 3. Open your browser
+- **Frontend**: http://localhost:5173
+- **Backend API**: http://localhost:5000
+
+## 🛑 Stop the app
+```bash
+docker-compose down
+```
+
 ## Contributing
 Contributions are welcome! Please open issues or submit pull requests for improvements, bug fixes, or new features.
 
 ## License
 This project is licensed under the MIT License.
+ modern, real-time stock market portfolio tracking application built with React, Node.js, and MongoDB.
+

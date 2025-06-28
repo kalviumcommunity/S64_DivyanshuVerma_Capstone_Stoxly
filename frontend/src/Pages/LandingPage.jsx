@@ -91,7 +91,7 @@ const LandingPage = () => {
             <path d="M3 3V21H21" stroke="#FF6B00" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
             <path d="M7 14L11 10L15 14L21 8" stroke="#FF6B00" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
           </svg>
-          <span className="logo-text">StockFolio</span>
+          <span className="logo-text">Stoxly</span>
         </div>
         
         <div className="nav-links">
@@ -256,10 +256,10 @@ const LandingPage = () => {
                 <path d="M3 3V21H21" stroke="#FF6B00" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
                 <path d="M7 14L11 10L15 14L21 8" stroke="#FF6B00" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
               </svg>
-              <span>StockFolio</span>
+              <span>Stoxly</span>
             </div>
             <p style={{ color: 'rgba(255, 255, 255, 0.7)', marginBottom: '1rem', maxWidth: '300px' }}>
-              Your trusted partner in portfolio management and trading analytics.
+              Your trusted partner in portfolio management.
             </p>
             <div className="footer-social">
               <a href="#" className="social-icon">
@@ -268,7 +268,7 @@ const LandingPage = () => {
               <a href="#" className="social-icon">
                 <FaLinkedinIn />
               </a>
-              <a href="#" className="social-icon">
+              <a href="https://github.com/kalviumcommunity/S64_DivyanshuVerma_Capstone_Stoxly" className="social-icon">
                 <FaGithub />
               </a>
             </div>
@@ -277,31 +277,30 @@ const LandingPage = () => {
           <div className="footer-column">
             <h3>Company</h3>
             <div className="footer-links">
-              <a href="#">About Us</a>
+              <a href="">About Us</a>
             </div>
           </div>
 
           <div className="footer-column">
             <h3>Resources</h3>
             <div className="footer-links">
-              <a href="#">Documentation</a>
-              <a href="#">API Reference</a>
-              <a href="#">Market Data</a>
+              <a href="https://docs.alpaca.markets/docs/getting-started">Documentation</a>
+              <a href="https://docs.alpaca.markets/reference">API Reference</a>
+              <a href="https://docs.alpaca.markets/docs/getting-started-with-alpaca-market-data">Market Data</a>
             </div>
           </div>
 
           <div className="footer-column">
             <h3>Support</h3>
             <div className="footer-links">
-              <a href="#">Contact Us</a>
-              <a href="#">Privacy Policy</a>
-              <a href="#">Terms of Service</a>
+              <a href="mailto:divyanshuverma811@gmail.com">Contact Us</a>
+              <a href="https://s3.amazonaws.com/files.alpaca.markets/disclosures/library/TermsAndConditions.pdf">Terms of Service</a>
             </div>
           </div>
         </div>
         
         <div className="footer-bottom">
-          <p>&copy; 2025 StockFolio. All rights reserved.</p>
+          <p>&copy; 2025 Stoxly. All rights reserved.</p>
         </div>
       </footer>
     </div>
