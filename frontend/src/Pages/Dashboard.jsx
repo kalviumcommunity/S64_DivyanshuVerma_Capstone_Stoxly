@@ -48,7 +48,6 @@ const Dashboard = () => {
   // GSAP refs for loader/data containers
   const holdingsLoaderRef = useRef();
   const holdingsDataRef = useRef();
-  // Refs for other components
 
   // GSAP animation for holdings
   useEffect(() => {
@@ -70,7 +69,6 @@ const Dashboard = () => {
         setMoversLoading(true);
         setMoversError('');
         const response = await axios.get(`${API_BASE_URL}/api/market/market-movers`);
-        console.log('Market movers response:', response.data); // Debug log
         setMarketMovers(response.data);
       } catch (error) {
         console.error('Failed to fetch market movers:', error.response?.data || error.message);
@@ -97,8 +95,6 @@ const Dashboard = () => {
         const res = await axios.get(`${API_BASE_URL}/api/portfolio`, { withCredentials: true });
         const { portfolio: data, user } = res.data;
 
-        console.log('Portfolio API response data:', res.data);
-
         // Set user profile picture if available
         if (user?.profilePicture) {
           console.log('User profile picture found:', user.profilePicture);
@@ -107,7 +103,6 @@ const Dashboard = () => {
         }
 
         // 2. Get unique symbols
-        console.log('Processing holdings data...', data);
         const symbols = [...new Set(data.map(h => h.symbol).filter(Boolean))];
         let symbolToName = {};
         if (symbols.length > 0) {
