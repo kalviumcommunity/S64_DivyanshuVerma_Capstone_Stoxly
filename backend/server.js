@@ -69,7 +69,6 @@ const fetchClosingPrice = async (symbol, date) => {
       'APCA-API-KEY-ID': process.env.ALPACA_API_KEY,
       'APCA-API-SECRET-KEY': process.env.ALPACA_SECRET_KEY,
     },
-    rejectUnauthorized: false
   };
 
   return new Promise((resolve, reject) => {
