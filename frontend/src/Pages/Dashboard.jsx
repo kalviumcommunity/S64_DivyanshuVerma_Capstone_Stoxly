@@ -31,7 +31,7 @@ const Dashboard = () => {
   const wsRef = useRef(null);
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [usTime, setUsTime] = useState(new Date());
-  const [userProfilePicture, setUserProfilePicture] = useState('/src/assets/default-avatar.png');
+  const [userProfilePicture, setUserProfilePicture] = useState('/src/assets/default-avatar.svg');
   const [showLogoutDropdown, setShowLogoutDropdown] = useState(false);
 
   // Add edit and delete related states

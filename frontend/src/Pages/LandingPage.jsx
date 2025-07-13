@@ -120,7 +120,7 @@ const LandingPage = () => {
           </p>
           
           <div className="cta-buttons">
-            <Link to="/signup" className="sign-up-btn">Sign Up for Free</Link>
+            <Link to="/login" className="sign-up-btn">Get Started</Link>
           </div>
         </div>
         
@@ -152,48 +152,24 @@ const LandingPage = () => {
             </p>
           </div>
 
-          <div className="trading-dashboard">
-            <div className="price-section">
-              <h3 className="section-title">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <path d="M12 2L2 7L12 12L22 7L12 2Z" stroke="#FF6B00" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                  <path d="M2 17L12 22L22 17" stroke="#FF6B00" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                  <path d="M2 12L12 17L22 12" stroke="#FF6B00" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                </svg>
-                Stock Prices
-              </h3>
-              <div className="price-list">
-                <div className="price-item">
-                  <div className="coin-info">
-                    <div className="coin-icon">₿</div>
-                    <span className="coin-name">Bitcoin</span>
-                  </div>
-                  <div>
-                    <span className="coin-price">0.289472</span>
-                    <span className="price-change">+4.32%</span>
-                  </div>
-                </div>
-                <div className="price-item">
-                  <div className="coin-info">
-                    <div className="coin-icon">T</div>
-                    <span className="coin-name">Tesla</span>
-                  </div>
-                  <div>
-                    <span className="coin-price">85.756283</span>
-                    <span className="price-change negative">-1.23%</span>
-                  </div>
-                </div>
-              </div>
-              <p className="section-description">Live Data: Access up-to-date Stock prices and transaction volumes for efficient management.</p>
+          <div className="trading-dashboard features-dashboard">
+            <div className="feature-box">
+              <h3 className="feature-title">🔐 Secure Authentication</h3>
+              <p className="feature-desc">User login and registration powered by JWT.</p>
+              <h3 className="feature-title">📊 Portfolio Dashboard</h3>
+              <p className="feature-desc">Add, update, and remove stocks in a personal portfolio.</p>
             </div>
-
-            <div className="tools-section">
-              <h3 className="section-title">Advanced Tools</h3>
-              <div className="chart-container">
-                <div className="price-value">$61,493.37</div>
-                <div className="chart-line"></div>
-              </div>
-              <p className="section-description">Leverage our advanced UI to enhance your Portfolio.</p>
+            <div className="feature-box">
+              <h3 className="feature-title">📈 Live Market Data</h3>
+              <p className="feature-desc">Real-time stock prices and updates via Alpaca API and WebSocket.</p>
+              <h3 className="feature-title">📉 Analytics & Insights</h3>
+              <p className="feature-desc">Visualize profits, losses, and historical trends.</p>
+            </div>
+            <div className="feature-box">
+              <h3 className="feature-title">🌐 3D Interactive UI</h3>
+              <p className="feature-desc">Engaging, animated elements and charts powered by Three.js.</p>
+              <h3 className="feature-title">📰 Market News</h3>
+              <p className="feature-desc">Stay updated with top headlines and movers in the stock market.</p>
             </div>
           </div>
         </section>
@@ -202,15 +178,15 @@ const LandingPage = () => {
       <div id="cubee" className="hero-section3 section-observer">
         <div className="universe-interface">
           <div className="universe-header">
-            <Suspense fallback={<div>THE CRYPTO UNIVERSE</div>}>
+            <Suspense fallback={<div>THE MARKET UNIVERSE</div>}>
               <ScrollFloat containerClassName="universe-subtitle">
-                THE CRYPTO UNIVERSE
+                THE MARKET UNIVERSE
               </ScrollFloat>
             </Suspense>
-            <h2 className="universe-title">Entire Crypto Universe</h2>
+            <h2 className="universe-title">Entire US Market Universe</h2>
             <p className="universe-description">
-              Experience the comprehensive selection of cryptocurrencies available on our platform. 
-              From major coins to emerging altcoins, we've got your crypto trading needs covered.
+              Experience the comprehensive selection of US stocks available on our platform. 
+              From major stocks to emerging stocks, we've got your stock trading needs covered.
             </p>
           </div>
           <div className="crypto-icons-container">
@@ -242,6 +218,9 @@ const LandingPage = () => {
               <div className="dashboard-image">
                 <div className="glow-effect"></div>
                 <img src="/dashboard-preview.png" alt="Trading Dashboard Interface" loading="lazy" />
+              </div>
+              <div className="dashboard-cta-btn-container">
+                <Link to="/login" className="sign-up-btn">Get Started</Link>
               </div>
             </div>
           </div>

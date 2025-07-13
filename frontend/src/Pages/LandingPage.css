@@ -679,7 +679,7 @@ html, body {
 }
 
 .universe-title {
-  font-size: 4rem;
+  font-size: 3.9rem;
   font-weight: 700;
   background: linear-gradient(to right, #fff, #ffa149);
   -webkit-background-clip: text;
@@ -1177,4 +1177,73 @@ html, body {
   max-width: 100%;
   height: auto;
   object-fit: cover;
+}
+
+/* Features Dashboard Section */
+.features-dashboard {
+  display: flex;
+  justify-content: space-between;
+  align-items: stretch;
+  gap: 2rem;
+  margin-top: 2.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.feature-box {
+  flex: 1;
+  background: rgba(20, 15, 10, 0.85);
+  border: 1.5px solid rgba(255, 107, 0, 0.18);
+  border-radius: 1.5rem;
+  box-shadow: 0 4px 32px 0 rgba(255, 107, 0, 0.08), 0 1.5px 8px 0 rgba(255, 107, 0, 0.10);
+  padding: 2.2rem 1.5rem 1.7rem 1.5rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  transition: transform 0.18s, box-shadow 0.18s;
+  min-width: 0;
+}
+
+.feature-box:hover {
+  transform: translateY(-6px) scale(1.025);
+  box-shadow: 0 8px 40px 0 rgba(255, 107, 0, 0.18), 0 2px 12px 0 rgba(255, 107, 0, 0.18);
+  border-color: #FF6B00;
+}
+
+.feature-title {
+  font-size: 1.15rem;
+  font-weight: 600;
+  color: #FF6B00;
+  margin-bottom: 0.2rem;
+  margin-top: 0.7rem;
+  letter-spacing: 0.2px;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.feature-desc {
+  font-size: 0.98rem;
+  color: #fff;
+  opacity: 0.88;
+  margin-bottom: 0.5rem;
+  margin-left: 1.2rem;
+  line-height: 1.5;
+}
+
+@media (max-width: 968px) {
+  .features-dashboard {
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+  .feature-box {
+    padding: 1.5rem 1rem 1.2rem 1rem;
+  }
+}
+
+.dashboard-cta-btn-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 2.2rem;
+  margin-bottom: 0.5rem;
 }

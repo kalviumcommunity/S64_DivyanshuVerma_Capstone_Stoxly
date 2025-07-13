@@ -60,7 +60,7 @@ const BitcoinModel = () => {
       overflow: 'visible',
     }}>
       <Canvas
-        camera={{ position: [0, 0, 3.5], fov: 50 }}
+        camera={{ position: [0, 0, 0], fov: 50 }}
         dpr={[1, 2]}
         gl={{ 
           powerPreference: "high-performance", 
