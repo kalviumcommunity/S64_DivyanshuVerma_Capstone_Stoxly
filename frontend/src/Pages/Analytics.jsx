@@ -8,21 +8,20 @@ const Analytics = ({ holdings }) => {
   const [filteredHoldings, setFilteredHoldings] = useState([]);
 
   useEffect(() => {
-    if (holdings && holdings.length > 0) {
-      setFilteredHoldings(holdings);
-      if (!selectedStock) {
-        setSelectedStock(holdings[0]);
-      }
+    if (holdings && holdings.length > 0 && !selectedStock) {
+      setSelectedStock(holdings[0]);
     }
-  }, [holdings]);
+  }, [holdings, selectedStock]);
 
   useEffect(() => {
-    if (holdings && holdings.length > 0) {
+    if (holdings) {
       const filtered = holdings.filter(stock => 
         stock.symbol.toLowerCase().includes(searchQuery.toLowerCase()) ||
         stock.name?.toLowerCase().includes(searchQuery.toLowerCase())
       );
       setFilteredHoldings(filtered);
+    } else {
+      setFilteredHoldings([]);
     }
   }, [searchQuery, holdings]);
 
@@ -88,7 +87,7 @@ const Analytics = ({ holdings }) => {
                     <span className="stock-symbol">{stock.symbol}</span>
                     <span className={`stock-change ${(stock.currentPrice - stock.closingPrice) >= 0 ? 'positive' : 'negative'}`}>
                       {(stock.currentPrice - stock.closingPrice) >= 0 ? '+' : ''}
-                      {(((stock.currentPrice - stock.closingPrice) / stock.closingPrice) * 100).toFixed(2)}%
+                      {stock.closingPrice ? (((stock.currentPrice - stock.closingPrice) / stock.closingPrice) * 100).toFixed(2) : 'N/A'}%
                     </span>
                   </div>
                   <div className="stock-item-name">{stock.name || stock.symbol}</div>
