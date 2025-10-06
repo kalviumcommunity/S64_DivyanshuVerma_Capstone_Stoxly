@@ -15,22 +15,28 @@ const NewsSection = () => {
       setError('');
       try {
         // 1. Fetch user's holdings
+        console.log('Fetching portfolio from:', `${API_BASE_URL}/api/portfolio`);
         const holdingsRes = await axios.get(`${API_BASE_URL}/api/portfolio`, { withCredentials: true });
-        const holdings = holdingsRes.data;
+        console.log('Portfolio response:', holdingsRes.data);
+        // Backend returns { portfolio: [...], user: {...} }
+        const holdings = holdingsRes.data.portfolio || [];
         const symbols = [...new Set(holdings.map(h => h.symbol).filter(Boolean))];
-        console.log(symbols);
+        console.log('Symbols for news fetch:', symbols);
         if (symbols.length === 0) {
+          console.log('No symbols found, setting empty news');
           setNews({});
           setIsLoading(false);
           return;
         }
         // 2. Fetch news for those symbols
+        console.log('Fetching news from:', `${API_BASE_URL}/api/news?symbols=${symbols.join(',')}`);
         const newsRes = await axios.get(`${API_BASE_URL}/api/news?symbols=${symbols.join(',')}`);
         setNews(newsRes.data);
       } catch (err) {
         setError('Failed to fetch news.');
         setNews({});
       } finally {
+        console.log('fetchNews completed, setting isLoading to false');
         setIsLoading(false);
       }
     };
