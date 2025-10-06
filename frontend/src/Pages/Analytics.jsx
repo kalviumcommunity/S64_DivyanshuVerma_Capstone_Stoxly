@@ -164,7 +164,7 @@ const Analytics = ({ holdings }) => {
             <div className="tradingview-widget-container">
               <div className="tradingview-widget">
                 <iframe
-                  src={`https://s.tradingview.com/widgetembed/?frameElementId=tradingview_chart&symbol=${stats.symbol}&interval=D&hidesidetoolbar=0&symboledit=1&saveimage=1&toolbarbg=f1f3f6&studies=[]&theme=dark&style=1&timezone=Etc%2FUTC&withdateranges=1&studies_overrides={}&overrides={}&enabled_features=[]&disabled_features=[]&locale=en&utm_source=localhost&utm_medium=widget&utm_campaign=chart&utm_term=${stats.symbol}`}
+                  src={`https://s.tradingview.com/widgetembed/?frameElementId=tradingview_chart&symbol=${stats.symbol}&interval=D&hidesidetoolbar=0&symboledit=1&saveimage=1&toolbarbg=f1f3f6&studies=[]&theme=dark&style=1&timezone=Etc%2FUTC&withdateranges=1&studies_overrides={}&overrides={}&enabled_features=[]&disabled_features=[]&locale=en&utm_source=${window.location.hostname}&utm_medium=widget&utm_campaign=chart&utm_term=${stats.symbol}`}
                   style={{
                     width: '100%',
                     height: '100%',
