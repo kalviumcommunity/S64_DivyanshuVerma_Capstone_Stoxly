@@ -253,7 +253,6 @@ body {
 
 /* Dashboard Content */
 .dashboard-content {
-  /* display: grid; */
   grid-template-columns: 2fr 1fr;
   gap: 2rem;
 }
