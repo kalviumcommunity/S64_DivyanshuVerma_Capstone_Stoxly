@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { FaBell, FaSearch, FaPlus, FaChartLine, FaNewspaper, FaStar, FaChartBar, FaEdit, FaTrash, FaSignOutAlt } from 'react-icons/fa';
 import NewsSection from '../components/NewsSection';
+import Analytics from './Analytics';
 import './Dashboard.css';
 import axios from 'axios';
 import Loader from '../components/loader';
@@ -406,16 +407,16 @@ const Dashboard = () => {
           );
           return (
             <tr key={stock._id || `${stock.symbol}-${stock.date}`}>
-              <td>
+              <td data-label="Stock">
                 <div className="stock-info">
                   <span className="symbol">{stock.symbol}</span>
                   <span className="name">{stock.name}</span>
                 </div>
               </td>
-              <td>{stock.quantity}</td>
-              <td>${(purchasePrice * stock.quantity).toFixed(2)}</td>
-              <td className="price-cell">${currentPrice.toFixed(2)}</td>
-              <td className={value >= 0 ? 'profit' : 'loss'} style={{ 
+              <td data-label="Quantity">{stock.quantity}</td>
+              <td data-label="Purchase Price">${(purchasePrice * stock.quantity).toFixed(2)}</td>
+              <td data-label="Current Price" className="price-cell">${currentPrice.toFixed(2)}</td>
+              <td data-label="Profit/Loss" className={value >= 0 ? 'profit' : 'loss'} style={{ 
                 position: 'relative', 
                 fontWeight: 'bold',
                 textShadow: value >= 0 ? '0 0 5px rgba(0, 255, 0, 0.3)' : '0 0 5px rgba(255, 76, 76, 0.3)'
@@ -425,7 +426,7 @@ const Dashboard = () => {
                   ${Math.abs(value).toFixed(2)} ({percentage}%)
                 </div>
               </td>
-              <td>${(currentPrice * stock.quantity).toFixed(2)}</td>
+              <td data-label="Total Value">${(currentPrice * stock.quantity).toFixed(2)}</td>
               <td>
                 <button className="icon-btn" title="Edit" onClick={() => handleEditClick(stock)}>
                   <FaEdit />
@@ -628,6 +629,8 @@ const Dashboard = () => {
             <div className="dashboard-content">
               {activeTab === 'news' ? (
                 <NewsSection />
+              ) : activeTab === 'analytics' ? (
+                <Analytics holdings={holdings} />
               ) : (
                 <>
                   {/* Summary Cards */}

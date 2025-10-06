@@ -1,0 +1,444 @@
+/* Analytics Container */
+.analytics-container {
+  padding: 0 2rem;
+  background: transparent;
+  min-height: 100vh;
+  color: white;
+  width: 100%;
+  max-width: none;
+
+}
+
+/* Stock Selection Section */
+.stock-selection-section {
+  margin-bottom: 2rem;
+}
+
+.stock-selector {
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(10px);
+  border-radius: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 1.5rem;
+}
+
+.selector-header {
+  margin-bottom: 1rem;
+}
+
+.selector-header h3 {
+  font-size: 1.25rem;
+  margin-bottom: 1rem;
+  color: var(--accent-orange);
+}
+
+.stock-search {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 8px;
+  color: white;
+  font-size: 0.9rem;
+  transition: all 0.3s ease;
+}
+
+.stock-search:focus {
+  outline: none;
+  border-color: var(--accent-orange);
+  background: rgba(255, 255, 255, 0.15);
+}
+
+.stock-search::placeholder {
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.stock-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 1rem;
+}
+
+.stock-item {
+  padding: 1rem;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.stock-item:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: var(--accent-orange);
+  transform: translateY(-2px);
+}
+
+.stock-item.active {
+  background: linear-gradient(135deg, rgba(255, 111, 0, 0.2) 0%, rgba(255, 107, 53, 0.2) 100%);
+  border-color: var(--accent-orange);
+  box-shadow: 0 4px 20px rgba(255, 111, 0, 0.3);
+}
+
+.stock-item-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.5rem;
+}
+
+.stock-symbol {
+  font-weight: bold;
+  font-size: 1.1rem;
+  color: white;
+}
+
+.stock-change {
+  font-size: 0.85rem;
+  font-weight: 600;
+  padding: 0.25rem 0.5rem;
+  border-radius: 6px;
+}
+
+.stock-change.positive {
+  color: var(--profit-green);
+  background: rgba(0, 255, 0, 0.1);
+}
+
+.stock-change.negative {
+  color: var(--loss-red);
+  background: rgba(255, 76, 76, 0.1);
+}
+
+.stock-item-name {
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 0.85rem;
+  margin-bottom: 0.5rem;
+}
+
+.stock-item-price {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--accent-orange);
+}
+
+.no-stocks {
+  text-align: center;
+  padding: 2rem;
+  color: rgba(255, 255, 255, 0.5);
+  grid-column: 1 / -1;
+}
+
+/* No Selection Section */
+.no-selection-section {
+  margin-bottom: 2rem;
+}
+
+.no-selection {
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(10px);
+  border-radius: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 4rem 2rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: rgba(255, 255, 255, 0.5);
+  gap: 1rem;
+  min-height: 300px;
+}
+
+.no-selection svg {
+  opacity: 0.3;
+}
+
+.no-selection h3 {
+  font-size: 1.5rem;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+/* Stock Overview Section */
+.stock-overview-section {
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(10px);
+  border-radius: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 2rem;
+  margin-bottom: 2rem;
+}
+
+.overview-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 2rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.overview-header h2 {
+  font-size: 2rem;
+  font-weight: bold;
+  color: var(--accent-orange);
+  margin-bottom: 0.5rem;
+}
+
+.stock-full-name {
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 1rem;
+}
+
+.current-price-display {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+}
+
+.price-label {
+  font-size: 0.85rem;
+  color: rgba(255, 255, 255, 0.6);
+  margin-bottom: 0.25rem;
+}
+
+.price-value {
+  font-size: 2rem;
+  font-weight: bold;
+  color: white;
+}
+
+/* Stats Grid */
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+}
+
+.stat-card {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  padding: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  transition: all 0.3s ease;
+}
+
+.stat-card:hover {
+  background: rgba(255, 255, 255, 0.08);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+}
+
+.stat-card.profit {
+  border-color: var(--profit-green);
+  background: rgba(0, 255, 0, 0.05);
+}
+
+.stat-card.loss {
+  border-color: var(--loss-red);
+  background: rgba(255, 76, 76, 0.05);
+}
+
+.stat-label {
+  font-size: 0.85rem;
+  color: rgba(255, 255, 255, 0.6);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.stat-value {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: white;
+}
+
+.stat-card.profit .stat-value {
+  color: var(--profit-green);
+}
+
+.stat-card.loss .stat-value {
+  color: var(--loss-red);
+}
+
+/* Chart Section */
+.chart-section {
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(10px);
+  border-radius: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 2rem;
+  margin-bottom: 2rem;
+}
+
+.chart-header {
+  margin-bottom: 1rem;
+}
+
+.chart-header h3 {
+  font-size: 1.5rem;
+  color: var(--accent-orange);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.chart-subtitle {
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 0.9rem;
+}
+
+.tradingview-widget-container {
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+}
+
+.tradingview-widget {
+  width: 100%;
+  height: 600px;
+  position: relative;
+}
+
+/* Future Features */
+.future-features-section {
+  margin-bottom: 2rem;
+}
+
+.section-title {
+  font-size: 1.5rem;
+  color: var(--accent-orange);
+  margin-bottom: 1.5rem;
+  text-align: center;
+}
+
+.future-features {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1.5rem;
+}
+
+.feature-card {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  padding: 2rem;
+  text-align: center;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.feature-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, var(--accent-orange), #ff6b35);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.feature-card:hover {
+  background: rgba(255, 255, 255, 0.08);
+  transform: translateY(-5px);
+  box-shadow: 0 8px 32px rgba(255, 111, 0, 0.2);
+}
+
+.feature-card:hover::before {
+  opacity: 1;
+}
+
+.feature-card.coming-soon {
+  opacity: 0.8;
+}
+
+.feature-icon {
+  font-size: 3rem;
+  margin-bottom: 1rem;
+  color: var(--accent-orange);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.feature-card h4 {
+  font-size: 1.25rem;
+  color: var(--accent-orange);
+  margin-bottom: 0.75rem;
+}
+
+.feature-card p {
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 0.9rem;
+  line-height: 1.5;
+}
+
+/* Responsive Design */
+@media (max-width: 1200px) {
+  .stats-grid {
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  }
+}
+
+@media (max-width: 968px) {
+  .stock-list {
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  }
+  
+  .overview-header {
+    flex-direction: column;
+    gap: 1rem;
+  }
+  
+  .current-price-display {
+    align-items: flex-start;
+  }
+}
+
+@media (max-width: 640px) {
+  .analytics-container {
+    padding: 1rem;
+  }
+
+  .stock-list {
+    grid-template-columns: 1fr;
+  }
+  
+  .stats-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .future-features {
+    grid-template-columns: 1fr;
+  }
+  
+  .tradingview-widget {
+    height: 400px;
+  }
+}
+
+/* Scrollbar Styling */
+.analytics-container::-webkit-scrollbar {
+  width: 8px;
+}
+
+.analytics-container::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 10px;
+}
+
+.analytics-container::-webkit-scrollbar-thumb {
+  background: rgba(255, 111, 0, 0.5);
+  border-radius: 10px;
+}
+
+.analytics-container::-webkit-scrollbar-thumb:hover {
+  background: var(--accent-orange);
+}
