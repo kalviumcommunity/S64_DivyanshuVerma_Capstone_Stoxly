@@ -92,7 +92,7 @@ const Analytics = ({ holdings }) => {
                     </span>
                   </div>
                   <div className="stock-item-name">{stock.name || stock.symbol}</div>
-                  <div className="stock-item-price">${stock.currentPrice?.toFixed(2) || '0.00'}</div>
+                  <div className="stock-item-price">${stock.currentPrice?.toFixed(2) ?? '0.00'}</div>
                 </div>
               ))
             )}
